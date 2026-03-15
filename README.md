@@ -9,17 +9,17 @@
 <p align="center">
   <img src="https://img.shields.io/badge/C-11-blue.svg?style=flat-square&logo=c" alt="C11">
   <img src="https://img.shields.io/badge/CMake-%23008FBA.svg?style=flat-square&logo=cmake&logoColor=white" alt="CMake">
-  <a href="https://github.com/while-one/caffeine-hal/tags">
-    <img src="https://img.shields.io/github/v/tag/while-one/caffeine-hal?style=flat-square&label=Release" alt="Latest Release">
+  <a href="https://github.com/while-one/caffeine-services/tags">
+    <img src="https://img.shields.io/github/v/tag/while-one/caffeine-services?style=flat-square&label=Release" alt="Latest Release">
   </a>
-  <a href="https://github.com/while-one/caffeine-hal/actions/workflows/ci.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/while-one/caffeine-hal/ci.yml?style=flat-square&branch=main" alt="CI Status">
+  <a href="https://github.com/while-one/caffeine-services/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/while-one/caffeine-services/ci.yml?style=flat-square&branch=main" alt="CI Status">
   </a>
-  <a href="https://github.com/while-one/caffeine-hal/commits/main">
-    <img src="https://img.shields.io/github/last-commit/while-one/caffeine-hal.svg?style=flat-square" alt="Last Commit">
+  <a href="https://github.com/while-one/caffeine-services/commits/main">
+    <img src="https://img.shields.io/github/last-commit/while-one/caffeine-services.svg?style=flat-square" alt="Last Commit">
   </a>
-  <a href="https://github.com/while-one/caffeine-hal/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/while-one/caffeine-hal?style=flat-square&color=blue" alt="License: MIT">
+  <a href="https://github.com/while-one/caffeine-services/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/while-one/caffeine-services?style=flat-square&color=blue" alt="License: MIT">
   </a>
 </p>
 

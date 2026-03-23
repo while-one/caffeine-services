@@ -27,8 +27,8 @@ extern "C"
 #define CFN_SVC_SCHEMA_START(name) static const cfn_svc_schema_field_t name##_fields[] = {
 #define CFN_SVC_SCHEMA_FIELD(f_name, f_type, struct_type, member)                                                      \
     {                                                                                                                  \
-        .name = (f_name), .type = (f_type), .offset = (uint16_t) offsetof((struct_type), (member)),                            \
-        .size = (uint16_t) sizeof(((struct_type *) 0)->(member))                                                         \
+        .name = (f_name), .type = (f_type), .offset = (uint16_t) offsetof((struct_type), (member)),                    \
+        .size = (uint16_t) sizeof(((struct_type *) 0)->(member))                                                       \
     }
 #define CFN_SVC_SCHEMA_END(name)                                                                                       \
     }                                                                                                                  \

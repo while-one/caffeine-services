@@ -62,6 +62,15 @@ struct cfn_svc_transport_api_s
 
     /* Maintenance */
     cfn_hal_error_code_t (*flush)(cfn_svc_transport_t *driver);
+    cfn_hal_error_code_t (*flush_rx)(cfn_svc_transport_t *driver);
+    cfn_hal_error_code_t (*flush_tx)(cfn_svc_transport_t *driver);
+
+    /* Connection Oriented (Server) */
+    cfn_hal_error_code_t (*listen)(cfn_svc_transport_t *driver, uint16_t port);
+    cfn_hal_error_code_t (*accept)(cfn_svc_transport_t *driver, cfn_svc_transport_t **client_driver_out);
+
+    /* Status */
+    cfn_hal_error_code_t (*get_bytes_available)(cfn_svc_transport_t *driver, size_t *count_out);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_transport_api_s);
@@ -260,6 +269,43 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_transport_flush(cfn_svc_transport_t 
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_TRANSPORT, flush, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_transport_flush_rx(cfn_svc_transport_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_TRANSPORT, flush_rx, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_transport_flush_tx(cfn_svc_transport_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_TRANSPORT, flush_tx, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_transport_listen(cfn_svc_transport_t *driver, uint16_t port)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_TRANSPORT, listen, driver, error, port);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_transport_accept(cfn_svc_transport_t  *driver,
+                                                            cfn_svc_transport_t **client_driver_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_TRANSPORT, accept, driver, error, client_driver_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_transport_get_bytes_available(cfn_svc_transport_t *driver,
+                                                                         size_t              *count_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_TRANSPORT, get_bytes_available, driver, error, count_out);
     return error;
 }
 

@@ -66,6 +66,7 @@ struct cfn_svc_collection_api_s
     cfn_hal_error_code_t (*peek_back)(cfn_svc_collection_t *driver, void *item_out);
     cfn_hal_error_code_t (*peek_front)(cfn_svc_collection_t *driver, void *item_out);
     cfn_hal_error_code_t (*peek_at)(cfn_svc_collection_t *driver, size_t index, void *item_out);
+    cfn_hal_error_code_t (*find)(cfn_svc_collection_t *driver, const void *item, size_t *index_out);
 
     /* State Operations */
     cfn_hal_error_code_t (*get_size)(cfn_svc_collection_t *driver, size_t *size_out);
@@ -73,6 +74,7 @@ struct cfn_svc_collection_api_s
     cfn_hal_error_code_t (*is_empty)(cfn_svc_collection_t *driver, bool *is_empty_out);
     cfn_hal_error_code_t (*is_full)(cfn_svc_collection_t *driver, bool *is_full_out);
     cfn_hal_error_code_t (*clear)(cfn_svc_collection_t *driver);
+    cfn_hal_error_code_t (*sort)(cfn_svc_collection_t *driver, void *compare_func);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_collection_api_s);
@@ -412,6 +414,28 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_collection_clear(cfn_svc_collection_
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_COLLECTION, clear, driver, error);
+    return error;
+}
+
+/**
+ * @brief Finds an item in the collection and retrieves its index.
+ */
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_collection_find(cfn_svc_collection_t *driver,
+                                                           const void           *item,
+                                                           size_t               *index_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_COLLECTION, find, driver, error, item, index_out);
+    return error;
+}
+
+/**
+ * @brief Sorts the collection using the provided comparison function.
+ */
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_collection_sort(cfn_svc_collection_t *driver, void *compare_func)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_COLLECTION, sort, driver, error, compare_func);
     return error;
 }
 

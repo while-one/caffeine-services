@@ -52,17 +52,31 @@ struct cfn_svc_display_api_s
     cfn_hal_error_code_t (*turn_on)(cfn_svc_display_t *driver);
     cfn_hal_error_code_t (*turn_off)(cfn_svc_display_t *driver);
     cfn_hal_error_code_t (*set_brightness)(cfn_svc_display_t *driver, uint8_t percent);
+    cfn_hal_error_code_t (*set_backlight)(cfn_svc_display_t *driver, uint8_t percent);
 
     /* Drawing Operations */
     cfn_hal_error_code_t (*draw_pixel)(cfn_svc_display_t *driver, uint16_t x, uint16_t y, uint32_t color);
+    cfn_hal_error_code_t (*draw_line)(
+        cfn_svc_display_t *driver, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint32_t color);
+    cfn_hal_error_code_t (*draw_rect)(
+        cfn_svc_display_t *driver, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color);
     cfn_hal_error_code_t (*fill_rect)(
         cfn_svc_display_t *driver, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color);
     cfn_hal_error_code_t (*draw_bitmap)(
         cfn_svc_display_t *driver, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint8_t *data);
+    cfn_hal_error_code_t (*clear_window)(cfn_svc_display_t *driver, uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+    cfn_hal_error_code_t (*set_cursor)(cfn_svc_display_t *driver, uint16_t x, uint16_t y);
 
     /* Buffer Management */
     cfn_hal_error_code_t (*clear)(cfn_svc_display_t *driver);
     cfn_hal_error_code_t (*update)(cfn_svc_display_t *driver);
+
+    /* Low-level Communication */
+    cfn_hal_error_code_t (*write_data)(cfn_svc_display_t *driver, const uint8_t *data, size_t len);
+    cfn_hal_error_code_t (*write_command)(cfn_svc_display_t *driver, uint8_t cmd);
+
+    /* Configuration */
+    cfn_hal_error_code_t (*set_orientation)(cfn_svc_display_t *driver, uint8_t orientation);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_display_api_s);
@@ -277,6 +291,67 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_display_update(cfn_svc_display_t *dr
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_DISPLAY, update, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_display_set_backlight(cfn_svc_display_t *driver, uint8_t percent)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_DISPLAY, set_backlight, driver, error, percent);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_display_draw_line(
+    cfn_svc_display_t *driver, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint32_t color)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_DISPLAY, draw_line, driver, error, x0, y0, x1, y1, color);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t
+cfn_svc_display_draw_rect(cfn_svc_display_t *driver, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_DISPLAY, draw_rect, driver, error, x, y, w, h, color);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t
+cfn_svc_display_clear_window(cfn_svc_display_t *driver, uint16_t x, uint16_t y, uint16_t w, uint16_t h)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_DISPLAY, clear_window, driver, error, x, y, w, h);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_display_set_cursor(cfn_svc_display_t *driver, uint16_t x, uint16_t y)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_DISPLAY, set_cursor, driver, error, x, y);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_display_write_data(cfn_svc_display_t *driver,
+                                                              const uint8_t     *data,
+                                                              size_t             len)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_DISPLAY, write_data, driver, error, data, len);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_display_write_command(cfn_svc_display_t *driver, uint8_t cmd)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_DISPLAY, write_command, driver, error, cmd);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_display_set_orientation(cfn_svc_display_t *driver, uint8_t orientation)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_DISPLAY, set_orientation, driver, error, orientation);
     return error;
 }
 

@@ -22,6 +22,12 @@ extern "C"
 
 typedef enum
 {
+    CFN_SVC_HUM_MODE_CONTINUOUS,
+    CFN_SVC_HUM_MODE_ONE_SHOT,
+} cfn_svc_hum_mode_t;
+
+typedef enum
+{
     CFN_SVC_HUM_EVENT_NONE = 0,
     CFN_SVC_HUM_EVENT_DATA_READY = CFN_HAL_BIT(0),
 } cfn_svc_hum_event_t;
@@ -53,6 +59,10 @@ struct cfn_svc_hum_sensor_api_s
     /* Configuration */
     cfn_hal_error_code_t (*set_resolution)(cfn_svc_hum_sensor_t *driver, uint8_t bits);
     cfn_hal_error_code_t (*get_resolution)(cfn_svc_hum_sensor_t *driver, uint8_t *bits_out);
+    cfn_hal_error_code_t (*set_mode)(cfn_svc_hum_sensor_t *driver, cfn_svc_hum_mode_t mode);
+    cfn_hal_error_code_t (*start_conversion)(cfn_svc_hum_sensor_t *driver);
+    cfn_hal_error_code_t (*set_oversampling)(cfn_svc_hum_sensor_t *driver, uint8_t factor);
+    cfn_hal_error_code_t (*get_status)(cfn_svc_hum_sensor_t *driver, uint32_t *status_flags);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_hum_sensor_api_s);
@@ -235,6 +245,34 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_hum_sensor_get_resolution(cfn_svc_hu
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_HUM_SENSOR, get_resolution, driver, error, bits_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_hum_sensor_set_mode(cfn_svc_hum_sensor_t *driver, cfn_svc_hum_mode_t mode)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_HUM_SENSOR, set_mode, driver, error, mode);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_hum_sensor_start_conversion(cfn_svc_hum_sensor_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_HUM_SENSOR, start_conversion, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_hum_sensor_set_oversampling(cfn_svc_hum_sensor_t *driver, uint8_t factor)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_HUM_SENSOR, set_oversampling, driver, error, factor);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_hum_sensor_get_status(cfn_svc_hum_sensor_t *driver, uint32_t *status_flags)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_HUM_SENSOR, get_status, driver, error, status_flags);
     return error;
 }
 

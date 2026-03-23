@@ -79,10 +79,15 @@ struct cfn_svc_gnss_api_s
     /* Data Retrieval */
     cfn_hal_error_code_t (*get_location)(cfn_svc_gnss_t *driver, cfn_svc_gnss_location_t *loc_out);
     cfn_hal_error_code_t (*get_time)(cfn_svc_gnss_t *driver, struct tm *time_out);
+    cfn_hal_error_code_t (*get_time_utc)(cfn_svc_gnss_t *driver, uint32_t *unix_timestamp);
     cfn_hal_error_code_t (*get_satellites_in_view)(cfn_svc_gnss_t *driver, uint8_t *count_out);
+    cfn_hal_error_code_t (*get_hdop)(cfn_svc_gnss_t *driver, float *hdop_out);
+    cfn_hal_error_code_t (*get_speed_knots)(cfn_svc_gnss_t *driver, float *speed_out);
+    cfn_hal_error_code_t (*get_heading_degrees)(cfn_svc_gnss_t *driver, float *heading_out);
 
     /* Configuration */
     cfn_hal_error_code_t (*set_fix_rate)(cfn_svc_gnss_t *driver, uint32_t rate_ms);
+    cfn_hal_error_code_t (*set_power_mode)(cfn_svc_gnss_t *driver, uint8_t mode);
 
     /* Maintenance */
     cfn_hal_error_code_t (*cold_start)(cfn_svc_gnss_t *driver);
@@ -300,6 +305,41 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gnss_hot_start(cfn_svc_gnss_t *drive
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_GNSS, hot_start, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gnss_get_hdop(cfn_svc_gnss_t *driver, float *hdop_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GNSS, get_hdop, driver, error, hdop_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gnss_get_time_utc(cfn_svc_gnss_t *driver, uint32_t *unix_timestamp)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GNSS, get_time_utc, driver, error, unix_timestamp);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gnss_get_speed_knots(cfn_svc_gnss_t *driver, float *speed_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GNSS, get_speed_knots, driver, error, speed_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gnss_get_heading_degrees(cfn_svc_gnss_t *driver, float *heading_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GNSS, get_heading_degrees, driver, error, heading_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gnss_set_power_mode(cfn_svc_gnss_t *driver, uint8_t mode)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GNSS, set_power_mode, driver, error, mode);
     return error;
 }
 

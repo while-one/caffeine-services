@@ -64,10 +64,16 @@ struct cfn_svc_cli_api_s
     /* Command Management */
     cfn_hal_error_code_t (*register_command)(cfn_svc_cli_t *driver, const cfn_svc_cli_cmd_t *cmd);
     cfn_hal_error_code_t (*unregister_command)(cfn_svc_cli_t *driver, const char *name);
+    cfn_hal_error_code_t (*register_command_simple)(cfn_svc_cli_t *driver, const char *cmd, void *callback);
+    cfn_hal_error_code_t (*print_help)(cfn_svc_cli_t *driver);
 
     /* UI Control */
     cfn_hal_error_code_t (*set_prompt)(cfn_svc_cli_t *driver, const char *prompt);
     cfn_hal_error_code_t (*clear_screen)(cfn_svc_cli_t *driver);
+
+    /* History */
+    cfn_hal_error_code_t (*history_prev)(cfn_svc_cli_t *driver);
+    cfn_hal_error_code_t (*history_next)(cfn_svc_cli_t *driver);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_cli_api_s);
@@ -266,6 +272,36 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_cli_clear_screen(cfn_svc_cli_t *driv
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_CLI, clear_screen, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_cli_register_command_simple(cfn_svc_cli_t *driver,
+                                                                       const char    *cmd,
+                                                                       void          *callback)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_CLI, register_command_simple, driver, error, cmd, callback);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_cli_print_help(cfn_svc_cli_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_CLI, print_help, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_cli_history_prev(cfn_svc_cli_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_CLI, history_prev, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_cli_history_next(cfn_svc_cli_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_CLI, history_next, driver, error);
     return error;
 }
 

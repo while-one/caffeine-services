@@ -68,10 +68,24 @@ struct cfn_svc_gsm_api_s
 
     /* Network Info */
     cfn_hal_error_code_t (*get_signal_quality)(cfn_svc_gsm_t *driver, int32_t *rssi_dbm);
+    cfn_hal_error_code_t (*get_signal_quality_csq)(cfn_svc_gsm_t *driver, uint8_t *csq_out);
     cfn_hal_error_code_t (*get_network_status)(cfn_svc_gsm_t *driver, cfn_svc_gsm_net_status_t *status);
+    cfn_hal_error_code_t (*get_operator)(cfn_svc_gsm_t *driver, char *operator_out, size_t max_len);
+
+    /* Identification */
+    cfn_hal_error_code_t (*get_imei)(cfn_svc_gsm_t *driver, char *imei_out, size_t max_len);
+    cfn_hal_error_code_t (*get_imsi)(cfn_svc_gsm_t *driver, char *imsi_out, size_t max_len);
+    cfn_hal_error_code_t (*get_iccid)(cfn_svc_gsm_t *driver, char *iccid_out, size_t max_len);
 
     /* SMS */
     cfn_hal_error_code_t (*send_sms)(cfn_svc_gsm_t *driver, const char *number, const char *text);
+    cfn_hal_error_code_t (*read_sms)(
+        cfn_svc_gsm_t *driver, uint16_t index, char *number_out, char *message_out, size_t max_len);
+
+    /* Voice Calls */
+    cfn_hal_error_code_t (*dial)(cfn_svc_gsm_t *driver, const char *number);
+    cfn_hal_error_code_t (*answer)(cfn_svc_gsm_t *driver);
+    cfn_hal_error_code_t (*hangup)(cfn_svc_gsm_t *driver);
 
     /* Data / IP (Simplified) */
     cfn_hal_error_code_t (*http_get)(cfn_svc_gsm_t *driver, const char *url, uint8_t *response, size_t *len);
@@ -288,6 +302,70 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gsm_mqtt_publish(cfn_svc_gsm_t *driv
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GSM, mqtt_publish, driver, error, topic, payload, len);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gsm_get_imei(cfn_svc_gsm_t *driver, char *imei_out, size_t max_len)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GSM, get_imei, driver, error, imei_out, max_len);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gsm_get_imsi(cfn_svc_gsm_t *driver, char *imsi_out, size_t max_len)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GSM, get_imsi, driver, error, imsi_out, max_len);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gsm_get_iccid(cfn_svc_gsm_t *driver, char *iccid_out, size_t max_len)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GSM, get_iccid, driver, error, iccid_out, max_len);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gsm_get_operator(cfn_svc_gsm_t *driver, char *operator_out, size_t max_len)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GSM, get_operator, driver, error, operator_out, max_len);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gsm_get_signal_quality_csq(cfn_svc_gsm_t *driver, uint8_t *csq_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GSM, get_signal_quality_csq, driver, error, csq_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gsm_read_sms(
+    cfn_svc_gsm_t *driver, uint16_t index, char *number_out, char *message_out, size_t max_len)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GSM, read_sms, driver, error, index, number_out, message_out, max_len);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gsm_dial(cfn_svc_gsm_t *driver, const char *number)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_GSM, dial, driver, error, number);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gsm_answer(cfn_svc_gsm_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_GSM, answer, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_gsm_hangup(cfn_svc_gsm_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_GSM, hangup, driver, error);
     return error;
 }
 

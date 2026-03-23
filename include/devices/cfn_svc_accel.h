@@ -32,6 +32,13 @@ typedef enum
 
 typedef enum
 {
+    CFN_SVC_ACCEL_MODE_NORMAL,
+    CFN_SVC_ACCEL_MODE_LOW_POWER,
+    CFN_SVC_ACCEL_MODE_STANDBY,
+} cfn_svc_accel_mode_t;
+
+typedef enum
+{
     CFN_SVC_ACCEL_RANGE_2G,
     CFN_SVC_ACCEL_RANGE_4G,
     CFN_SVC_ACCEL_RANGE_8G,
@@ -78,6 +85,12 @@ struct cfn_svc_accel_api_s
 
     /* Feature Control */
     cfn_hal_error_code_t (*enable_interrupts)(cfn_svc_accel_t *driver, uint32_t event_mask);
+    cfn_hal_error_code_t (*set_mode)(cfn_svc_accel_t *driver, cfn_svc_accel_mode_t mode);
+    cfn_hal_error_code_t (*config_fifo)(cfn_svc_accel_t *driver, uint8_t watermark, uint8_t mode);
+    cfn_hal_error_code_t (*read_fifo)(cfn_svc_accel_t *driver, cfn_svc_accel_data_t *data, size_t *count);
+    cfn_hal_error_code_t (*config_tap_detection)(cfn_svc_accel_t *driver, bool double_tap, uint8_t threshold);
+    cfn_hal_error_code_t (*config_freefall)(cfn_svc_accel_t *driver, uint16_t threshold_mg, uint16_t time_ms);
+    cfn_hal_error_code_t (*get_status)(cfn_svc_accel_t *driver, uint32_t *status_flags);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_accel_api_s);
@@ -278,6 +291,54 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_accel_enable_interrupts(cfn_svc_acce
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_ACCEL, enable_interrupts, driver, error, event_mask);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_accel_set_mode(cfn_svc_accel_t *driver, cfn_svc_accel_mode_t mode)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_ACCEL, set_mode, driver, error, mode);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_accel_config_fifo(cfn_svc_accel_t *driver, uint8_t watermark, uint8_t mode)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_ACCEL, config_fifo, driver, error, watermark, mode);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_accel_read_fifo(cfn_svc_accel_t      *driver,
+                                                           cfn_svc_accel_data_t *data,
+                                                           size_t               *count)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_ACCEL, read_fifo, driver, error, data, count);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_accel_config_tap_detection(cfn_svc_accel_t *driver,
+                                                                      bool              double_tap,
+                                                                      uint8_t           threshold)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_ACCEL, config_tap_detection, driver, error, double_tap, threshold);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_accel_config_freefall(cfn_svc_accel_t *driver,
+                                                                 uint16_t          threshold_mg,
+                                                                 uint16_t          time_ms)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_ACCEL, config_freefall, driver, error, threshold_mg, time_ms);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_accel_get_status(cfn_svc_accel_t *driver, uint32_t *status_flags)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_ACCEL, get_status, driver, error, status_flags);
     return error;
 }
 

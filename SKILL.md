@@ -31,6 +31,19 @@ Every new service header (e.g., `cfn_svc_myservice.h`) must follow this exact st
 *   **Static Allocation Only:** No `malloc` or `free`. All service state and buffers must be provided by the caller (typically as static objects in the application layer).
 *   **Pointer Stability:** The driver structure (`cfn_svc_xxx_t`) must be stable in memory after construction.
 
+### C. Mandate for Exhaustive API Design
+When designing or updating a service interface, you MUST NOT settle for a "minimal" implementation. You are expected to design production-ready, feature-rich interfaces that cover the full spectrum of capabilities typical for that class of driver.
+
+An exhaustive API design includes:
+1.  **Primary Operations:** The core purpose of the driver (e.g., `read_celsius`, `send_data`).
+2.  **Configuration & Tuning:** Fine-grained control over hardware behavior (e.g., `set_resolution`, `set_oversampling`, `set_gain`, `set_filter`).
+3.  **Operational Modes:** Support for different power and performance states (e.g., `set_mode` with CONTINUOUS, ONE_SHOT, STANDBY).
+4.  **Hardware Features:** Common advanced features (e.g., FIFO management, threshold interrupts, tap/freefall detection for accelerometers).
+5.  **Status & Health:** Polling for hardware readiness and error states (e.g., `get_status`, `get_health`).
+6.  **Metadata:** Access to hardware identifiers or environmental data (e.g., `get_imei`, `get_hdop`).
+
+**Safety & Compatibility:** All new VMT members MUST be appended to the end of the API struct. You MUST use `CFN_HAL_CHECK_AND_CALL_FUNC` or `CFN_HAL_CHECK_AND_CALL_FUNC_VARG` in the inline wrappers to ensure that if an implementation has not yet mapped a new function (it is `NULL`), the framework safely returns `CFN_HAL_ERROR_NOT_SUPPORTED` instead of crashing.
+
 ## 3. Coding Standards (BARR-C:2018 / MISRA-C Compliance)
 
 *   **Braces:** Mandatory for every control block (`if`, `else`, `while`, etc.), regardless of size.

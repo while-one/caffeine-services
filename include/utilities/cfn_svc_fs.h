@@ -62,8 +62,14 @@ struct cfn_svc_fs_api_s
         cfn_svc_fs_t *driver, cfn_svc_fs_file_t file, uint8_t *buffer, size_t len, size_t *read_len);
     cfn_hal_error_code_t (*write)(
         cfn_svc_fs_t *driver, cfn_svc_fs_file_t file, const uint8_t *data, size_t len, size_t *written_len);
-    cfn_hal_error_code_t (*seek)(cfn_svc_fs_t *driver, cfn_svc_fs_file_t file, size_t offset);
+    cfn_hal_error_code_t (*seek)(cfn_svc_fs_t *driver, cfn_svc_fs_file_t file, uint32_t offset, uint8_t origin);
+    cfn_hal_error_code_t (*tell)(cfn_svc_fs_t *driver, cfn_svc_fs_file_t file, uint32_t *offset_out);
+    cfn_hal_error_code_t (*eof)(cfn_svc_fs_t *driver, cfn_svc_fs_file_t file, bool *is_eof);
     cfn_hal_error_code_t (*remove)(cfn_svc_fs_t *driver, const char *path);
+    cfn_hal_error_code_t (*rename)(cfn_svc_fs_t *driver, const char *old_path, const char *new_path);
+    cfn_hal_error_code_t (*mkdir)(cfn_svc_fs_t *driver, const char *path);
+    cfn_hal_error_code_t (*rmdir)(cfn_svc_fs_t *driver, const char *path);
+    cfn_hal_error_code_t (*stat)(cfn_svc_fs_t *driver, const char *path, void *stat_out);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_fs_api_s);
@@ -260,6 +266,72 @@ cfn_svc_fs_write(cfn_svc_fs_t *driver, cfn_svc_fs_file_t file, const uint8_t *da
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_FS, write, driver, error, file, data, len, written_len);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_fs_format(cfn_svc_fs_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_FS, format, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t
+cfn_svc_fs_seek(cfn_svc_fs_t *driver, cfn_svc_fs_file_t file, uint32_t offset, uint8_t origin)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_FS, seek, driver, error, file, offset, origin);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t
+cfn_svc_fs_tell(cfn_svc_fs_t *driver, cfn_svc_fs_file_t file, uint32_t *offset_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_FS, tell, driver, error, file, offset_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_fs_eof(cfn_svc_fs_t *driver, cfn_svc_fs_file_t file, bool *is_eof)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_FS, eof, driver, error, file, is_eof);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_fs_remove(cfn_svc_fs_t *driver, const char *path)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_FS, remove, driver, error, path);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t
+cfn_svc_fs_rename(cfn_svc_fs_t *driver, const char *old_path, const char *new_path)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_FS, rename, driver, error, old_path, new_path);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_fs_mkdir(cfn_svc_fs_t *driver, const char *path)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_FS, mkdir, driver, error, path);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_fs_rmdir(cfn_svc_fs_t *driver, const char *path)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_FS, rmdir, driver, error, path);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_fs_stat(cfn_svc_fs_t *driver, const char *path, void *stat_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_FS, stat, driver, error, path, stat_out);
     return error;
 }
 

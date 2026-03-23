@@ -39,6 +39,14 @@ typedef enum
     CFN_SVC_BATTERY_STATUS_FULL
 } cfn_svc_battery_status_t;
 
+typedef enum
+{
+    CFN_SVC_BATTERY_STATE_DISCHARGING = 0,
+    CFN_SVC_BATTERY_STATE_CHARGING,
+    CFN_SVC_BATTERY_STATE_FULL,
+    CFN_SVC_BATTERY_STATE_FAULT
+} cfn_svc_battery_charge_state_t;
+
 /* Types Structs ----------------------------------------------------*/
 
 typedef struct
@@ -67,8 +75,13 @@ struct cfn_svc_battery_api_s
     cfn_hal_error_code_t (*get_current)(cfn_svc_battery_t *driver, float *amps_out);
     cfn_hal_error_code_t (*get_remaining_capacity)(cfn_svc_battery_t *driver, uint32_t *mah_out);
 
+    cfn_hal_error_code_t (*read_current_ma)(cfn_svc_battery_t *driver, float *current_out);
+    cfn_hal_error_code_t (*read_capacity_mah)(cfn_svc_battery_t *driver, float *cap_out);
+    cfn_hal_error_code_t (*read_state_of_charge)(cfn_svc_battery_t *driver, float *soc_percent_out);
+
     /* Status */
     cfn_hal_error_code_t (*get_status)(cfn_svc_battery_t *driver, cfn_svc_battery_status_t *status_out);
+    cfn_hal_error_code_t (*get_charge_state)(cfn_svc_battery_t *driver, cfn_svc_battery_charge_state_t *state_out);
     cfn_hal_error_code_t (*get_temperature)(cfn_svc_battery_t *driver, float *temp_out);
 };
 
@@ -266,6 +279,35 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_battery_get_temperature(cfn_svc_batt
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_BATTERY, get_temperature, driver, error, temp_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_battery_read_current_ma(cfn_svc_battery_t *driver, float *current_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_BATTERY, read_current_ma, driver, error, current_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_battery_read_capacity_mah(cfn_svc_battery_t *driver, float *cap_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_BATTERY, read_capacity_mah, driver, error, cap_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_battery_read_state_of_charge(cfn_svc_battery_t *driver, float *soc_percent_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_BATTERY, read_state_of_charge, driver, error, soc_percent_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_battery_get_charge_state(cfn_svc_battery_t              *driver,
+                                                                    cfn_svc_battery_charge_state_t *state_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_BATTERY, get_charge_state, driver, error, state_out);
     return error;
 }
 

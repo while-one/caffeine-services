@@ -54,6 +54,7 @@ struct cfn_svc_light_sensor_api_s
     /* Measurement Operations */
     cfn_hal_error_code_t (*read_lux)(cfn_svc_light_sensor_t *driver, float *lux_out);
     cfn_hal_error_code_t (*read_raw)(cfn_svc_light_sensor_t *driver, uint32_t *raw_out);
+    cfn_hal_error_code_t (*read_channels)(cfn_svc_light_sensor_t *driver, uint16_t *ch1, uint16_t *ch2);
 
     /* Configuration */
     cfn_hal_error_code_t (*set_gain)(cfn_svc_light_sensor_t *driver, uint32_t gain);
@@ -230,6 +231,15 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_light_sensor_read_raw(cfn_svc_light_
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_LIGHT_SENSOR, read_raw, driver, error, raw_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_light_sensor_read_channels(cfn_svc_light_sensor_t *driver,
+                                                                      uint16_t               *ch1,
+                                                                      uint16_t               *ch2)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_LIGHT_SENSOR, read_channels, driver, error, ch1, ch2);
     return error;
 }
 

@@ -68,6 +68,8 @@ struct cfn_svc_button_api_s
     cfn_hal_error_code_t (*set_debounce_time)(cfn_svc_button_t *driver, uint32_t ms);
     cfn_hal_error_code_t (*is_pressed)(cfn_svc_button_t *driver, bool *pressed_out);
     cfn_hal_error_code_t (*is_released)(cfn_svc_button_t *driver, bool *released_out);
+    cfn_hal_error_code_t (*get_click_count)(cfn_svc_button_t *driver, uint8_t *count_out);
+    cfn_hal_error_code_t (*get_hold_time_ms)(cfn_svc_button_t *driver, uint32_t *time_out);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_button_api_s);
@@ -249,6 +251,20 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_button_is_released(cfn_svc_button_t 
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_BUTTON, is_released, driver, error, released_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_button_get_click_count(cfn_svc_button_t *driver, uint8_t *count_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_BUTTON, get_click_count, driver, error, count_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_button_get_hold_time_ms(cfn_svc_button_t *driver, uint32_t *time_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_BUTTON, get_hold_time_ms, driver, error, time_out);
     return error;
 }
 

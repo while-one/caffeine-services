@@ -22,6 +22,12 @@ extern "C"
 
 typedef enum
 {
+    CFN_SVC_PRESSURE_MODE_CONTINUOUS,
+    CFN_SVC_PRESSURE_MODE_ONE_SHOT,
+} cfn_svc_pressure_mode_t;
+
+typedef enum
+{
     CFN_SVC_PRESSURE_EVENT_NONE = 0,
     CFN_SVC_PRESSURE_EVENT_DATA_READY = CFN_HAL_BIT(0),
 } cfn_svc_pressure_event_t;
@@ -55,6 +61,13 @@ struct cfn_svc_pressure_sensor_api_s
 
     /* Info */
     cfn_hal_error_code_t (*get_altitude_m)(cfn_svc_pressure_sensor_t *driver, float sea_level_hpa, float *alt_out);
+
+    /* Configuration */
+    cfn_hal_error_code_t (*set_mode)(cfn_svc_pressure_sensor_t *driver, cfn_svc_pressure_mode_t mode);
+    cfn_hal_error_code_t (*start_conversion)(cfn_svc_pressure_sensor_t *driver);
+    cfn_hal_error_code_t (*set_oversampling)(cfn_svc_pressure_sensor_t *driver, uint8_t factor);
+    cfn_hal_error_code_t (*set_filter)(cfn_svc_pressure_sensor_t *driver, uint8_t coefficient);
+    cfn_hal_error_code_t (*get_status)(cfn_svc_pressure_sensor_t *driver, uint32_t *status_flags);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_pressure_sensor_api_s);
@@ -243,6 +256,45 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_pressure_sensor_get_altitude(cfn_svc
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(
         CFN_SVC_TYPE_PRESSURE_SENSOR, get_altitude_m, driver, error, sea_level_hpa, alt_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_pressure_sensor_set_mode(cfn_svc_pressure_sensor_t *driver,
+                                                                     cfn_svc_pressure_mode_t    mode)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_PRESSURE_SENSOR, set_mode, driver, error, mode);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_pressure_sensor_start_conversion(cfn_svc_pressure_sensor_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_PRESSURE_SENSOR, start_conversion, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_pressure_sensor_set_oversampling(cfn_svc_pressure_sensor_t *driver,
+                                                                             uint8_t                    factor)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_PRESSURE_SENSOR, set_oversampling, driver, error, factor);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_pressure_sensor_set_filter(cfn_svc_pressure_sensor_t *driver,
+                                                                       uint8_t                    coefficient)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_PRESSURE_SENSOR, set_filter, driver, error, coefficient);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_pressure_sensor_get_status(cfn_svc_pressure_sensor_t *driver,
+                                                                       uint32_t                  *status_flags)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_PRESSURE_SENSOR, get_status, driver, error, status_flags);
     return error;
 }
 

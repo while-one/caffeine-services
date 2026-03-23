@@ -68,6 +68,7 @@ struct cfn_svc_led_api_s
     /* Effects */
     cfn_hal_error_code_t (*blink_start)(cfn_svc_led_t *driver, uint32_t period_ms);
     cfn_hal_error_code_t (*blink_stop)(cfn_svc_led_t *driver);
+    cfn_hal_error_code_t (*set_blink)(cfn_svc_led_t *driver, uint32_t interval_ms, uint32_t count);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_led_api_s);
@@ -273,6 +274,13 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_led_blink_stop(cfn_svc_led_t *driver
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_LED, blink_stop, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_led_set_blink(cfn_svc_led_t *driver, uint32_t interval_ms, uint32_t count)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_LED, set_blink, driver, error, interval_ms, count);
     return error;
 }
 

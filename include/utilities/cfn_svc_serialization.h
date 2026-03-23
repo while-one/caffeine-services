@@ -107,6 +107,22 @@ struct cfn_svc_serialization_api_s
                                    size_t                   in_size,
                                    void                    *data_ptr,
                                    size_t                  *bytes_read);
+
+    /**
+     * @brief Encodes a data structure into a stream based on a schema.
+     */
+    cfn_hal_error_code_t (*encode_stream)(cfn_svc_serialization_t *driver,
+                                          const cfn_svc_schema_t  *schema,
+                                          const void              *data_ptr,
+                                          void                    *out_stream);
+
+    /**
+     * @brief Decodes a stream into a data structure based on a schema.
+     */
+    cfn_hal_error_code_t (*decode_stream)(cfn_svc_serialization_t *driver,
+                                          const cfn_svc_schema_t  *schema,
+                                          void                    *in_stream,
+                                          void                    *data_ptr);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_serialization_api_s);
@@ -190,6 +206,34 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_serialization_decode(cfn_svc_seriali
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(
         CFN_SVC_TYPE_SERIALIZATION, decode, driver, error, schema, in_buf, in_size, data_ptr, bytes_read);
+    return error;
+}
+
+/**
+ * @brief Encodes a data structure into a stream based on a schema.
+ */
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_serialization_encode_stream(cfn_svc_serialization_t *driver,
+                                                                        const cfn_svc_schema_t  *schema,
+                                                                        const void              *data_ptr,
+                                                                        void                    *out_stream)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(
+        CFN_SVC_TYPE_SERIALIZATION, encode_stream, driver, error, schema, data_ptr, out_stream);
+    return error;
+}
+
+/**
+ * @brief Decodes a stream into a data structure based on a schema.
+ */
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_serialization_decode_stream(cfn_svc_serialization_t *driver,
+                                                                        const cfn_svc_schema_t  *schema,
+                                                                        void                    *in_stream,
+                                                                        void                    *data_ptr)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(
+        CFN_SVC_TYPE_SERIALIZATION, decode_stream, driver, error, schema, in_stream, data_ptr);
     return error;
 }
 

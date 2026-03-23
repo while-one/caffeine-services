@@ -30,6 +30,19 @@ typedef enum
     CFN_SVC_LOG_LEVEL_FATAL
 } cfn_svc_log_level_t;
 
+typedef enum
+{
+    CFN_SVC_LOG_TARGET_CONSOLE = 0,
+    CFN_SVC_LOG_TARGET_FILE,
+    CFN_SVC_LOG_TARGET_NETWORK
+} cfn_svc_log_target_t;
+
+typedef enum
+{
+    CFN_SVC_LOG_FORMAT_TEXT = 0,
+    CFN_SVC_LOG_FORMAT_JSON
+} cfn_svc_log_format_t;
+
 /* Types Structs ----------------------------------------------------*/
 
 typedef struct
@@ -57,6 +70,9 @@ struct cfn_svc_logging_api_s
 
     /* Configuration */
     cfn_hal_error_code_t (*set_level)(cfn_svc_logging_t *driver, cfn_svc_log_level_t level);
+    cfn_hal_error_code_t (*set_output_target)(cfn_svc_logging_t *driver, cfn_svc_log_target_t target);
+    cfn_hal_error_code_t (*enable_color)(cfn_svc_logging_t *driver, bool enable);
+    cfn_hal_error_code_t (*set_format)(cfn_svc_logging_t *driver, cfn_svc_log_format_t format);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_svc_logging_api_s);
@@ -230,6 +246,35 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_log_flush(cfn_svc_logging_t *driver)
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SVC_TYPE_LOGGING, flush, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_log_set_level(cfn_svc_logging_t *driver, cfn_svc_log_level_t level)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_LOGGING, set_level, driver, error, level);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_log_set_output_target(cfn_svc_logging_t *driver,
+                                                                 cfn_svc_log_target_t target)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_LOGGING, set_output_target, driver, error, target);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_log_enable_color(cfn_svc_logging_t *driver, bool enable)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_LOGGING, enable_color, driver, error, enable);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_svc_log_set_format(cfn_svc_logging_t *driver, cfn_svc_log_format_t format)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SVC_TYPE_LOGGING, set_format, driver, error, format);
     return error;
 }
 

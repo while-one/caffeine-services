@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.23)
 
 project(caffeine-services
-        VERSION 0.1.0
+        VERSION 0.1.1
         LANGUAGES C ASM
         DESCRIPTION "Header-only polymorphic middleware services layer for the Caffeine Framework"
         HOMEPAGE_URL "https://github.com/while-one/caffeine-services"

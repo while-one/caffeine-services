@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.23)
 
-project(caffeine-services
+project(caffeine-sal
         VERSION 0.1.1
         LANGUAGES C ASM
         DESCRIPTION "Header-only polymorphic middleware services layer for the Caffeine Framework"
-        HOMEPAGE_URL "https://github.com/while-one/caffeine-services"
+        HOMEPAGE_URL "https://github.com/while-one/caffeine-sal"
 )
 
 # Global standards for the Caffeine Framework
@@ -30,7 +30,7 @@ FetchContent_MakeAvailable(caffeine-hal)
 
 # --- Component Configuration ---
 add_library(${PROJECT_NAME} INTERFACE)
-add_library(caffeine::services ALIAS ${PROJECT_NAME})
+add_library(caffeine::sal ALIAS ${PROJECT_NAME})
 
 target_compile_options(${PROJECT_NAME} INTERFACE ${CAFFEINE_COMPILE_OPTIONS})
 
@@ -52,9 +52,9 @@ target_sources(
 )
 
 # --- Testing ---
-option(CFN_SERVICES_BUILD_TESTS "Build the Caffeine-Services test executable" OFF)
+option(CFN_SAL_BUILD_TESTS "Build the Caffeine-Services test executable" OFF)
 
-if(PROJECT_IS_TOP_LEVEL AND CFN_SERVICES_BUILD_TESTS)
+if(PROJECT_IS_TOP_LEVEL AND CFN_SAL_BUILD_TESTS)
     include(CTest)
     if(BUILD_TESTING)
         add_subdirectory(tests)
@@ -123,7 +123,7 @@ if(CLANG_FORMAT)
         ${PROJECT_NAME}-format
         COMMAND ${CLANG_FORMAT}
         ${FORMAT_ARGS}
-        -style=file:${PROJECT_SOURCE_DIR}/config/coding/.clang-format
+        -style=file:${PROJECT_SOURCE_DIR}/caffeine-build/config/coding/.clang-format
         ${ALL_ANALYSIS_SOURCES}
         COMMENT "${FORMAT_COMMENT}"
     )
@@ -160,7 +160,7 @@ if(CLANG_TIDY)
     add_custom_target(
         ${PROJECT_NAME}-tidy
         COMMAND ${CLANG_TIDY}
-        --config-file=${PROJECT_SOURCE_DIR}/config/coding/.clang-tidy
+        --config-file=${PROJECT_SOURCE_DIR}/caffeine-build/config/coding/.clang-tidy
         --header-filter="${PROJECT_SOURCE_DIR}/include/.*"
         ${ALL_HEADERS}
         ${PROJECT_SOURCE_DIR}/tests/compliance.c

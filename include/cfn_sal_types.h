@@ -1,10 +1,10 @@
 /**
- * @file cfn_svc_types.h
- * @brief Common types for Caffeine Services.
+ * @file cfn_sal_types.h
+ * @brief Common types for Caffeine SAL.
  */
 
-#ifndef CAFFEINE_SERVICES_CFN_SVC_TYPES_H
-#define CAFFEINE_SERVICES_CFN_SVC_TYPES_H
+#ifndef CAFFEINE_SAL_CFN_SAL_TYPES_H
+#define CAFFEINE_SAL_CFN_SAL_TYPES_H
 
 #ifdef __cplusplus
 extern "C"
@@ -28,9 +28,9 @@ typedef struct
     void    *instance; /*!< Addressing info: I2C device address, SPI CS pin handle, etc. */
     uint32_t type;     /*!< Peripheral type identifier (e.g., CFN_HAL_PERIPHERAL_TYPE_I2C) */
     void    *user_arg; /*!< Optional custom argument for shared contexts or callbacks */
-} cfn_svc_phy_t;
+} cfn_sal_phy_t;
 
-#define CFN_SVC_PHY_INITIALIZER(_handle, _instance, _type, _user_arg)                                                  \
+#define CFN_SAL_PHY_INITIALIZER(_handle, _instance, _type, _user_arg)                                                  \
     {                                                                                                                  \
         .handle = (_handle), .instance = (_instance), .type = (_type), .user_arg = (_user_arg)                         \
     }
@@ -42,12 +42,12 @@ typedef struct
 {
     uint8_t              ref_count;
     cfn_hal_error_code_t last_init_error;
-} cfn_svc_shared_ctx_t;
+} cfn_sal_shared_ctx_t;
 
 /**
  * @brief Static initializer for a shared context.
  */
-#define CFN_SVC_SHARED_CTX_INITIALIZER()                                                                               \
+#define CFN_SAL_SHARED_CTX_INITIALIZER()                                                                               \
     {                                                                                                                  \
         .ref_count = 0, .last_init_error = CFN_HAL_ERROR_OK                                                            \
     }
@@ -56,7 +56,7 @@ typedef struct
  * @brief Safely increments the reference count.
  * @return true if this is the first initialization (hardware should be initialized).
  */
-static inline bool cfn_svc_shared_ctx_should_init(cfn_svc_shared_ctx_t *ctx)
+static inline bool cfn_sal_shared_ctx_should_init(cfn_sal_shared_ctx_t *ctx)
 {
     if (!ctx)
     {
@@ -75,7 +75,7 @@ static inline bool cfn_svc_shared_ctx_should_init(cfn_svc_shared_ctx_t *ctx)
  * @brief Safely decrements the reference count.
  * @return true if this is the final deinitialization (hardware should be turned off).
  */
-static inline bool cfn_svc_shared_ctx_should_deinit(cfn_svc_shared_ctx_t *ctx)
+static inline bool cfn_sal_shared_ctx_should_deinit(cfn_sal_shared_ctx_t *ctx)
 {
     if (!ctx || ctx->ref_count == 0)
     {
@@ -89,4 +89,4 @@ static inline bool cfn_svc_shared_ctx_should_deinit(cfn_svc_shared_ctx_t *ctx)
 }
 #endif
 
-#endif /* CAFFEINE_SERVICES_CFN_SVC_TYPES_H */
+#endif /* CAFFEINE_SAL_CFN_SAL_TYPES_H */

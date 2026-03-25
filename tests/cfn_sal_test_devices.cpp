@@ -1,41 +1,41 @@
 /**
- * @file cfn_svc_test_devices.cpp
+ * @file cfn_sal_test_devices.cpp
  * @brief Verification tests for hardware device service interfaces.
  */
 
 #include <gtest/gtest.h>
 #include <cstring>
-#include "devices/cfn_svc_led.h"
-#include "devices/cfn_svc_button.h"
-#include "devices/cfn_svc_temp_sensor.h"
-#include "devices/cfn_svc_hum_sensor.h"
-#include "devices/cfn_svc_accel.h"
-#include "devices/cfn_svc_gsm.h"
-#include "devices/cfn_svc_battery.h"
-#include "devices/cfn_svc_light_sensor.h"
-#include "devices/cfn_svc_pressure_sensor.h"
-#include "devices/cfn_svc_gnss.h"
-#include "devices/cfn_svc_display.h"
-#include "network/cfn_svc_connection.h"
-#include "network/cfn_svc_transport.h"
-#include "utilities/cfn_svc_cli.h"
-#include "utilities/cfn_svc_at_parser.h"
-#include "utilities/cfn_svc_fs.h"
-#include "utilities/cfn_svc_logging.h"
+#include "devices/cfn_sal_led.h"
+#include "devices/cfn_sal_button.h"
+#include "devices/cfn_sal_temp_sensor.h"
+#include "devices/cfn_sal_hum_sensor.h"
+#include "devices/cfn_sal_accel.h"
+#include "devices/cfn_sal_gsm.h"
+#include "devices/cfn_sal_battery.h"
+#include "devices/cfn_sal_light_sensor.h"
+#include "devices/cfn_sal_pressure_sensor.h"
+#include "devices/cfn_sal_gnss.h"
+#include "devices/cfn_sal_display.h"
+#include "network/cfn_sal_connection.h"
+#include "network/cfn_sal_transport.h"
+#include "utilities/cfn_sal_cli.h"
+#include "utilities/cfn_sal_at_parser.h"
+#include "utilities/cfn_sal_fs.h"
+#include "utilities/cfn_sal_logging.h"
 
 // --- LED Tests ---
 
 class LedTest : public ::testing::Test
 {
   protected:
-    cfn_svc_led_t     driver{};
-    cfn_svc_led_api_t api{};
+    cfn_sal_led_t     driver{};
+    cfn_sal_led_api_t api{};
 
     void SetUp() override
     {
         memset(&driver, 0, sizeof(driver));
         memset(&api, 0, sizeof(api));
-        driver.base.type = CFN_SVC_TYPE_LED;
+        driver.base.type = CFN_SAL_TYPE_LED;
         driver.base.status = CFN_HAL_DRIVER_STATUS_CONSTRUCTED;
         driver.base.vmt = (const struct cfn_hal_api_base_s *) &api;
         driver.api = &api;
@@ -49,19 +49,19 @@ TEST_F(LedTest, LifecycleSuccess)
         (void) d;
         return CFN_HAL_ERROR_OK;
     };
-    EXPECT_EQ(cfn_svc_led_init(&driver), CFN_HAL_ERROR_OK);
+    EXPECT_EQ(cfn_sal_led_init(&driver), CFN_HAL_ERROR_OK);
 }
 
 TEST_F(LedTest, ToggleSuccess)
 {
     static bool toggled = false;
-    api.toggle = [](cfn_svc_led_t *d) -> cfn_hal_error_code_t
+    api.toggle = [](cfn_sal_led_t *d) -> cfn_hal_error_code_t
     {
         (void) d;
         toggled = true;
         return CFN_HAL_ERROR_OK;
     };
-    EXPECT_EQ(cfn_svc_led_toggle(&driver), CFN_HAL_ERROR_OK);
+    EXPECT_EQ(cfn_sal_led_toggle(&driver), CFN_HAL_ERROR_OK);
     EXPECT_TRUE(toggled);
 }
 
@@ -70,14 +70,14 @@ TEST_F(LedTest, ToggleSuccess)
 class ConnectionTest : public ::testing::Test
 {
   protected:
-    cfn_svc_connection_t     driver{};
-    cfn_svc_connection_api_t api{};
+    cfn_sal_connection_t     driver{};
+    cfn_sal_connection_api_t api{};
 
     void SetUp() override
     {
         memset(&driver, 0, sizeof(driver));
         memset(&api, 0, sizeof(api));
-        driver.base.type = CFN_SVC_TYPE_CONNECTION;
+        driver.base.type = CFN_SAL_TYPE_CONNECTION;
         driver.base.status = CFN_HAL_DRIVER_STATUS_CONSTRUCTED;
         driver.base.vmt = (const struct cfn_hal_api_base_s *) &api;
         driver.api = &api;
@@ -86,12 +86,12 @@ class ConnectionTest : public ::testing::Test
 
 TEST_F(ConnectionTest, ConnectSuccess)
 {
-    api.connect = [](cfn_svc_connection_t *d) -> cfn_hal_error_code_t
+    api.connect = [](cfn_sal_connection_t *d) -> cfn_hal_error_code_t
     {
         (void) d;
         return CFN_HAL_ERROR_OK;
     };
-    EXPECT_EQ(cfn_svc_connection_connect(&driver), CFN_HAL_ERROR_OK);
+    EXPECT_EQ(cfn_sal_connection_connect(&driver), CFN_HAL_ERROR_OK);
 }
 
 // --- Transport Tests ---
@@ -99,14 +99,14 @@ TEST_F(ConnectionTest, ConnectSuccess)
 class TransportTest : public ::testing::Test
 {
   protected:
-    cfn_svc_transport_t     driver{};
-    cfn_svc_transport_api_t api{};
+    cfn_sal_transport_t     driver{};
+    cfn_sal_transport_api_t api{};
 
     void SetUp() override
     {
         memset(&driver, 0, sizeof(driver));
         memset(&api, 0, sizeof(api));
-        driver.base.type = CFN_SVC_TYPE_TRANSPORT;
+        driver.base.type = CFN_SAL_TYPE_TRANSPORT;
         driver.base.status = CFN_HAL_DRIVER_STATUS_CONSTRUCTED;
         driver.base.vmt = (const struct cfn_hal_api_base_s *) &api;
         driver.api = &api;
@@ -115,7 +115,7 @@ class TransportTest : public ::testing::Test
 
 TEST_F(TransportTest, SendSyncSuccess)
 {
-    api.send = [](cfn_svc_transport_t *d, const uint8_t *data, size_t len, uint32_t timeout) -> cfn_hal_error_code_t
+    api.send = [](cfn_sal_transport_t *d, const uint8_t *data, size_t len, uint32_t timeout) -> cfn_hal_error_code_t
     {
         (void) d;
         (void) data;
@@ -124,12 +124,12 @@ TEST_F(TransportTest, SendSyncSuccess)
         return CFN_HAL_ERROR_OK;
     };
     uint8_t data[10] = { 0 };
-    EXPECT_EQ(cfn_svc_transport_send(&driver, data, 10, 100), CFN_HAL_ERROR_OK);
+    EXPECT_EQ(cfn_sal_transport_send(&driver, data, 10, 100), CFN_HAL_ERROR_OK);
 }
 
 TEST_F(TransportTest, SendAsyncSuccess)
 {
-    api.send_async = [](cfn_svc_transport_t *d, const uint8_t *data, size_t len) -> cfn_hal_error_code_t
+    api.send_async = [](cfn_sal_transport_t *d, const uint8_t *data, size_t len) -> cfn_hal_error_code_t
     {
         (void) d;
         (void) data;
@@ -137,7 +137,7 @@ TEST_F(TransportTest, SendAsyncSuccess)
         return CFN_HAL_ERROR_OK;
     };
     uint8_t data[10] = { 0 };
-    EXPECT_EQ(cfn_svc_transport_send_async(&driver, data, 10), CFN_HAL_ERROR_OK);
+    EXPECT_EQ(cfn_sal_transport_send_async(&driver, data, 10), CFN_HAL_ERROR_OK);
 }
 
 // --- Button Tests ---
@@ -145,14 +145,14 @@ TEST_F(TransportTest, SendAsyncSuccess)
 class ButtonTest : public ::testing::Test
 {
   protected:
-    cfn_svc_button_t     driver{};
-    cfn_svc_button_api_t api{};
+    cfn_sal_button_t     driver{};
+    cfn_sal_button_api_t api{};
 
     void SetUp() override
     {
         memset(&driver, 0, sizeof(driver));
         memset(&api, 0, sizeof(api));
-        driver.base.type = CFN_SVC_TYPE_BUTTON;
+        driver.base.type = CFN_SAL_TYPE_BUTTON;
         driver.base.status = CFN_HAL_DRIVER_STATUS_CONSTRUCTED;
         driver.base.vmt = (const struct cfn_hal_api_base_s *) &api;
         driver.api = &api;
@@ -161,14 +161,14 @@ class ButtonTest : public ::testing::Test
 
 TEST_F(ButtonTest, IsPressedSuccess)
 {
-    api.is_pressed = [](cfn_svc_button_t *d, bool *p) -> cfn_hal_error_code_t
+    api.is_pressed = [](cfn_sal_button_t *d, bool *p) -> cfn_hal_error_code_t
     {
         (void) d;
         *p = true;
         return CFN_HAL_ERROR_OK;
     };
     bool pressed = false;
-    EXPECT_EQ(cfn_svc_button_is_pressed(&driver, &pressed), CFN_HAL_ERROR_OK);
+    EXPECT_EQ(cfn_sal_button_is_pressed(&driver, &pressed), CFN_HAL_ERROR_OK);
     EXPECT_TRUE(pressed);
 }
 
@@ -177,14 +177,14 @@ TEST_F(ButtonTest, IsPressedSuccess)
 class BatteryTest : public ::testing::Test
 {
   protected:
-    cfn_svc_battery_t     driver{};
-    cfn_svc_battery_api_t api{};
+    cfn_sal_battery_t     driver{};
+    cfn_sal_battery_api_t api{};
 
     void SetUp() override
     {
         memset(&driver, 0, sizeof(driver));
         memset(&api, 0, sizeof(api));
-        driver.base.type = CFN_SVC_TYPE_BATTERY;
+        driver.base.type = CFN_SAL_TYPE_BATTERY;
         driver.base.status = CFN_HAL_DRIVER_STATUS_CONSTRUCTED;
         driver.base.vmt = (const struct cfn_hal_api_base_s *) &api;
         driver.api = &api;
@@ -193,14 +193,14 @@ class BatteryTest : public ::testing::Test
 
 TEST_F(BatteryTest, GetVoltageSuccess)
 {
-    api.get_voltage = [](cfn_svc_battery_t *d, float *v) -> cfn_hal_error_code_t
+    api.get_voltage = [](cfn_sal_battery_t *d, float *v) -> cfn_hal_error_code_t
     {
         (void) d;
         *v = 3.7f;
         return CFN_HAL_ERROR_OK;
     };
     float volts = 0;
-    EXPECT_EQ(cfn_svc_battery_get_voltage(&driver, &volts), CFN_HAL_ERROR_OK);
+    EXPECT_EQ(cfn_sal_battery_get_voltage(&driver, &volts), CFN_HAL_ERROR_OK);
     EXPECT_NEAR(volts, 3.7f, 0.01f);
 }
 
@@ -209,14 +209,14 @@ TEST_F(BatteryTest, GetVoltageSuccess)
 class GnssTest : public ::testing::Test
 {
   protected:
-    cfn_svc_gnss_t     driver{};
-    cfn_svc_gnss_api_t api{};
+    cfn_sal_gnss_t     driver{};
+    cfn_sal_gnss_api_t api{};
 
     void SetUp() override
     {
         memset(&driver, 0, sizeof(driver));
         memset(&api, 0, sizeof(api));
-        driver.base.type = CFN_SVC_TYPE_GNSS;
+        driver.base.type = CFN_SAL_TYPE_GNSS;
         driver.base.status = CFN_HAL_DRIVER_STATUS_CONSTRUCTED;
         driver.base.vmt = (const struct cfn_hal_api_base_s *) &api;
         driver.api = &api;
@@ -225,14 +225,14 @@ class GnssTest : public ::testing::Test
 
 TEST_F(GnssTest, GetLocationSuccess)
 {
-    api.get_location = [](cfn_svc_gnss_t *d, cfn_svc_gnss_location_t *loc) -> cfn_hal_error_code_t
+    api.get_location = [](cfn_sal_gnss_t *d, cfn_sal_gnss_location_t *loc) -> cfn_hal_error_code_t
     {
         (void) d;
         loc->latitude = 45.0;
         return CFN_HAL_ERROR_OK;
     };
-    cfn_svc_gnss_location_t loc = {};
-    EXPECT_EQ(cfn_svc_gnss_get_location(&driver, &loc), CFN_HAL_ERROR_OK);
+    cfn_sal_gnss_location_t loc = {};
+    EXPECT_EQ(cfn_sal_gnss_get_location(&driver, &loc), CFN_HAL_ERROR_OK);
     EXPECT_DOUBLE_EQ(loc.latitude, 45.0);
 }
 
@@ -241,14 +241,14 @@ TEST_F(GnssTest, GetLocationSuccess)
 class FsTest : public ::testing::Test
 {
   protected:
-    cfn_svc_fs_t     driver{};
-    cfn_svc_fs_api_t api{};
+    cfn_sal_fs_t     driver{};
+    cfn_sal_fs_api_t api{};
 
     void SetUp() override
     {
         memset(&driver, 0, sizeof(driver));
         memset(&api, 0, sizeof(api));
-        driver.base.type = CFN_SVC_TYPE_FS;
+        driver.base.type = CFN_SAL_TYPE_FS;
         driver.base.status = CFN_HAL_DRIVER_STATUS_CONSTRUCTED;
         driver.base.vmt = (const struct cfn_hal_api_base_s *) &api;
         driver.api = &api;
@@ -257,12 +257,12 @@ class FsTest : public ::testing::Test
 
 TEST_F(FsTest, MountSuccess)
 {
-    api.mount = [](cfn_svc_fs_t *d) -> cfn_hal_error_code_t
+    api.mount = [](cfn_sal_fs_t *d) -> cfn_hal_error_code_t
     {
         (void) d;
         return CFN_HAL_ERROR_OK;
     };
-    EXPECT_EQ(cfn_svc_fs_mount(&driver), CFN_HAL_ERROR_OK);
+    EXPECT_EQ(cfn_sal_fs_mount(&driver), CFN_HAL_ERROR_OK);
 }
 
 // --- Logging Tests ---
@@ -270,14 +270,14 @@ TEST_F(FsTest, MountSuccess)
 class LoggingTest : public ::testing::Test
 {
   protected:
-    cfn_svc_logging_t     driver{};
-    cfn_svc_logging_api_t api{};
+    cfn_sal_logging_t     driver{};
+    cfn_sal_logging_api_t api{};
 
     void SetUp() override
     {
         memset(&driver, 0, sizeof(driver));
         memset(&api, 0, sizeof(api));
-        driver.base.type = CFN_SVC_TYPE_LOGGING;
+        driver.base.type = CFN_SAL_TYPE_LOGGING;
         driver.base.status = CFN_HAL_DRIVER_STATUS_CONSTRUCTED;
         driver.base.vmt = (const struct cfn_hal_api_base_s *) &api;
         driver.api = &api;
@@ -286,10 +286,10 @@ class LoggingTest : public ::testing::Test
 
 TEST_F(LoggingTest, FlushSuccess)
 {
-    api.flush = [](cfn_svc_logging_t *d) -> cfn_hal_error_code_t
+    api.flush = [](cfn_sal_logging_t *d) -> cfn_hal_error_code_t
     {
         (void) d;
         return CFN_HAL_ERROR_OK;
     };
-    EXPECT_EQ(cfn_svc_log_flush(&driver), CFN_HAL_ERROR_OK);
+    EXPECT_EQ(cfn_sal_log_flush(&driver), CFN_HAL_ERROR_OK);
 }

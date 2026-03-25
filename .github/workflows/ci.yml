@@ -16,7 +16,7 @@ jobs:
         submodules: recursive
     
     - name: Check Formatting
-      run: ./caffeine-build/scripts/build.sh tests-native caffeine-services-format -DFORMAT_DRY_RUN=ON
+      run: ./caffeine-build/scripts/build.sh tests-native caffeine-sal-format -DFORMAT_DRY_RUN=ON
 
   static-analysis:
     name: Static Analysis (Cppcheck & Clang-Tidy)
@@ -27,7 +27,7 @@ jobs:
         submodules: recursive
     
     - name: Run Analysis
-      run: ./caffeine-build/scripts/build.sh tests-native caffeine-services-analyze
+      run: ./caffeine-build/scripts/build.sh tests-native caffeine-sal-analyze
 
   build-and-test:
     name: Build & Unit Tests

@@ -1,10 +1,10 @@
 /**
- * @file cfn_svc.h
- * @brief Core definitions and macros for Caffeine Services.
+ * @file cfn_sal.h
+ * @brief Core definitions and macros for Caffeine SAL.
  */
 
-#ifndef CAFFEINE_SERVICES_CFN_SVC_H
-#define CAFFEINE_SERVICES_CFN_SVC_H
+#ifndef CAFFEINE_SAL_CFN_SAL_H
+#define CAFFEINE_SAL_CFN_SAL_H
 
 #ifdef __cplusplus
 extern "C"
@@ -14,7 +14,7 @@ extern "C"
 /* Includes ---------------------------------------------------------*/
 #include "cfn_hal.h"
 #include "cfn_hal_base.h"
-#include "cfn_svc_types.h"
+#include "cfn_sal_types.h"
 
 /* Defines ----------------------------------------------------------*/
 
@@ -22,20 +22,20 @@ extern "C"
  * @brief Prefix for all Service-level types.
  * Distinguishes services ('S') from HAL peripherals ('A').
  */
-#define CFN_SVC_PREFIX 'S'
+#define CFN_SAL_PREFIX 'S'
 
 /**
  * @brief Helper macro to create a Service FourCC type.
  */
-#define CFN_SVC_TYPE(a, b, c) CFN_HAL_MAKE_TYPE(CFN_SVC_PREFIX, a, b, c)
+#define CFN_SAL_TYPE(a, b, c) CFN_HAL_MAKE_TYPE(CFN_SAL_PREFIX, a, b, c)
 
 /**
  * @brief Service-level error code base offset.
  * Offsets service errors from HAL errors to avoid collisions.
  */
-#define CFN_SVC_ERROR_BASE 0x600
+#define CFN_SAL_ERROR_BASE 0x600
 
-#define CFN_SVC_CREATE_DRIVER_TYPE(prefix, config_type, api_type, phy_type, cb_type)                                   \
+#define CFN_SAL_CREATE_DRIVER_TYPE(prefix, config_type, api_type, phy_type, cb_type)                                   \
     struct cfn_##prefix##_s                                                                                            \
     {                                                                                                                  \
         cfn_hal_driver_t   base;                                                                                       \
@@ -59,4 +59,4 @@ extern "C"
 }
 #endif
 
-#endif /* CAFFEINE_SERVICES_CFN_SVC_H */
+#endif /* CAFFEINE_SAL_CFN_SAL_H */

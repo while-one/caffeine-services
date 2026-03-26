@@ -26,6 +26,12 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/while-one/caffeine-hal.git
     GIT_TAG        v0.4.12
 )
+
+# Ensure the mock library is available for tests
+if(CFN_SAL_BUILD_TESTS)
+    set(CFN_HAL_PROVIDE_MOCK ON)
+endif()
+
 FetchContent_MakeAvailable(caffeine-hal)
 
 # --- Component Configuration ---
@@ -52,14 +58,15 @@ target_sources(
 )
 
 # --- Testing ---
-option(CFN_SAL_BUILD_TESTS "Build the Caffeine-Services test executable" OFF)
+option(CFN_BUILD_TESTS "Build the Caffeine-Services test executable" OFF)
 
-if(PROJECT_IS_TOP_LEVEL AND CFN_SAL_BUILD_TESTS)
+if(PROJECT_IS_TOP_LEVEL AND CFN_BUILD_TESTS)
     include(CTest)
     if(BUILD_TESTING)
         add_subdirectory(tests)
     endif()
 endif()
+
 
 # --- Installation ---
 install(
@@ -101,15 +108,14 @@ install(
 # Tooling: Formatting & Analysis
 # ==============================================================================
 
-# Gather sources for formatting and analysis
+# Gather sources for formatting and analysis (C headers only for this interface repo)
 set(ALL_HEADERS ${PROJECT_ALL_HEADERS})
-file(GLOB TEST_SOURCES "${PROJECT_SOURCE_DIR}/tests/*.cpp")
-set(ALL_ANALYSIS_SOURCES ${ALL_HEADERS} ${TEST_SOURCES})
-
+set(ALL_ANALYSIS_SOURCES ${ALL_HEADERS})
 # 1. Code Formatting (clang-format)
 find_program(CLANG_FORMAT clang-format)
 if(CLANG_FORMAT)
     option(FORMAT_DRY_RUN "Run clang-format in dry-run mode" OFF)
+
     
     if(FORMAT_DRY_RUN)
         set(FORMAT_ARGS --dry-run --Werror)

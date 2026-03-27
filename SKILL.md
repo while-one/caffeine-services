@@ -132,5 +132,5 @@ The user instantiates separate service drivers (e.g., `cfn_sal_temp_sensor_t` an
 
 1.  **Draft the Header:** Create the VMT and wrappers in the appropriate subdirectory.
 2.  **Add Test:** Create `tests/cfn_sal_test_<name>.cpp` and implement the Big 4.
-3.  **Validate Build:** Run `cmake --preset unit-tests-gtest -D CFN_BUILD_TESTS=ON`.
-4.  **Analyze:** Run `make caffeine-sal-format` and `make caffeine-sal-analyze`.
+3.  **Local Validation:** Run `./caffeine-build/scripts/ci.sh` to validate formatting, analysis, and tests.
+4.  **Zero-Warning Policy:** Fix any issues identified by static analysis (Fail-on-warning is enforced).

@@ -55,6 +55,20 @@ The library decouples high-level application logic from concrete implementations
 
 ---
 
+## Development & Analysis
+
+The project includes built-in targets for maintaining code quality. Use the framework's centralized scripts for orchestration:
+
+```bash
+# Full Quality Gate (Format -> Analyze -> Build -> Test)
+./caffeine-build/scripts/ci.sh all
+
+# Run only unit tests
+./caffeine-build/scripts/ci.sh test unit-tests-gtest
+```
+
+---
+
 ## Integration
 
 ### 1. CMake (FetchContent)

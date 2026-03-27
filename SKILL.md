@@ -132,5 +132,6 @@ The user instantiates separate service drivers (e.g., `cfn_sal_temp_sensor_t` an
 
 1.  **Draft the Header:** Create the VMT and wrappers in the appropriate subdirectory.
 2.  **Add Test:** Create `tests/cfn_sal_test_<name>.cpp` and implement the Big 4.
-3.  **Local Validation:** Run `./caffeine-build/scripts/ci.sh` to validate formatting, analysis, and tests.
-4.  **Zero-Warning Policy:** Fix any issues identified by static analysis (Fail-on-warning is enforced).
+3.  **Local Validation:** Run `./caffeine-build/scripts/ci.sh all` to validate formatting, analysis, and tests.
+4.  **Zero-Warning Policy:** Fix any issues identified by static analysis (Fail-on-warning is enforced). Static analysis targets are managed via the centralized `cfn_add_code_quality_targets()` macro.
+5.  **Test Presets:** Unit tests are executed via the project-local `unit-tests-gtest` preset (inheriting from `base-unit-tests-gtest` in `caffeine-build`).

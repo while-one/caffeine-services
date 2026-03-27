@@ -12,7 +12,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-include(${PROJECT_SOURCE_DIR}/caffeine-build/cmake/CaffeineMacros.cmake OPTIONAL)
+include(${PROJECT_SOURCE_DIR}/caffeine-build/cmake/CaffeineMacros.cmake)
 
 # Useful for IDEs, clang-tidy, and clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -24,7 +24,8 @@ include(FetchContent)
 FetchContent_Declare(
     caffeine-hal
     GIT_REPOSITORY https://github.com/while-one/caffeine-hal.git
-    GIT_TAG        v0.4.14
+    GIT_TAG        v0.5.0
+
 )
 
 # Ensure the mock library is available for tests
@@ -111,76 +112,16 @@ install(
 # Gather sources for formatting and analysis (C headers only for this interface repo)
 set(ALL_HEADERS ${PROJECT_ALL_HEADERS})
 set(ALL_ANALYSIS_SOURCES ${ALL_HEADERS})
-# 1. Code Formatting (clang-format)
-find_program(CLANG_FORMAT clang-format)
-if(CLANG_FORMAT)
-    option(FORMAT_DRY_RUN "Run clang-format in dry-run mode" OFF)
 
-    
-    if(FORMAT_DRY_RUN)
-        set(FORMAT_ARGS --dry-run --Werror)
-        set(FORMAT_COMMENT "Checking header formatting with clang-format (BARR-C style)...")
-    else()
-        set(FORMAT_ARGS -i)
-        set(FORMAT_COMMENT "Formatting header files with clang-format (BARR-C style)...")
-    endif()
-
-    add_custom_target(
-        ${PROJECT_NAME}-format
-        COMMAND ${CLANG_FORMAT}
-        ${FORMAT_ARGS}
-        -style=file:${PROJECT_SOURCE_DIR}/caffeine-build/config/coding/.clang-format
-        ${ALL_ANALYSIS_SOURCES}
-        COMMENT "${FORMAT_COMMENT}"
-    )
-else()
-    message(WARNING "clang-format not found.")
-endif()
-
-# 2. Static Analysis (cppcheck)
-find_program(CPPCHECK cppcheck)
-if(CPPCHECK)
-    add_custom_target(
-        ${PROJECT_NAME}-cppcheck
-        COMMAND ${CPPCHECK}
-        --enable=all
-        --suppress=missingIncludeSystem
-        --suppress=unusedFunction
-        --suppress=*:*/_deps/*
-        --inline-suppr
-        --std=c11
-        -I ${PROJECT_SOURCE_DIR}/include
-        -I ${caffeine-hal_SOURCE_DIR}/include
-        ${ALL_HEADERS}
-        COMMENT "Running cppcheck static analysis..."
-    )
-    if(NOT TARGET ${PROJECT_NAME}-analyze)
-        add_custom_target(${PROJECT_NAME}-analyze COMMENT "Running full static analysis suite...")
-    endif()
-    add_dependencies(${PROJECT_NAME}-analyze ${PROJECT_NAME}-cppcheck)
-endif()
-
-# 3. Static Analysis (clang-tidy)
-find_program(CLANG_TIDY clang-tidy)
-if(CLANG_TIDY)
-    add_custom_target(
-        ${PROJECT_NAME}-tidy
-        COMMAND ${CLANG_TIDY}
-        --config-file=${PROJECT_SOURCE_DIR}/caffeine-build/config/coding/.clang-tidy
-        --header-filter="${PROJECT_SOURCE_DIR}/include/.*"
-        ${ALL_HEADERS}
-        ${PROJECT_SOURCE_DIR}/tests/compliance.c
-        --
-        -I${PROJECT_SOURCE_DIR}/include
-        -I${caffeine-hal_SOURCE_DIR}/include
-        -std=c11
-        COMMENT "Running clang-tidy static analysis..."
-    )
-    
-    if(TARGET ${PROJECT_NAME}-analyze)
-        add_dependencies(${PROJECT_NAME}-analyze ${PROJECT_NAME}-tidy)
-    endif()
-endif()
+cfn_add_code_quality_targets(
+    ${PROJECT_NAME}
+    HEADERS_ONLY
+    FORMAT_SOURCES ${ALL_ANALYSIS_SOURCES}
+    ANALYSIS_SOURCES ${ALL_HEADERS}
+    CPPCHECK_ARGS -I ${PROJECT_SOURCE_DIR}/include -I ${caffeine-hal_SOURCE_DIR}/include
+    TIDY_ARGS -I${PROJECT_SOURCE_DIR}/include -I${caffeine-hal_SOURCE_DIR}/include
+    TIDY_HEADER_FILTER "${PROJECT_SOURCE_DIR}/include/.*"
+)
 
 # 4. C11 Compliance Check
 add_executable(${PROJECT_NAME}-compliance ${PROJECT_SOURCE_DIR}/tests/compliance.c)

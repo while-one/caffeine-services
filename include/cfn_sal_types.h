@@ -35,56 +35,6 @@ typedef struct
         .handle = (_handle), .instance = (_instance), .type = (_type), .user_arg = (_user_arg)                         \
     }
 
-/**
- * @brief Foundational reference counter for shared combination sensor contexts.
- */
-typedef struct
-{
-    uint8_t              ref_count;
-    cfn_hal_error_code_t last_init_error;
-} cfn_sal_shared_ctx_t;
-
-/**
- * @brief Static initializer for a shared context.
- */
-#define CFN_SAL_SHARED_CTX_INITIALIZER()                                                                               \
-    {                                                                                                                  \
-        .ref_count = 0, .last_init_error = CFN_HAL_ERROR_OK                                                            \
-    }
-
-/**
- * @brief Safely increments the reference count.
- * @return true if this is the first initialization (hardware should be initialized).
- */
-static inline bool cfn_sal_shared_ctx_should_init(cfn_sal_shared_ctx_t *ctx)
-{
-    if (!ctx)
-    {
-        return false;
-    }
-    if (ctx->ref_count == 0)
-    {
-        ctx->ref_count++;
-        return true;
-    }
-    ctx->ref_count++;
-    return false;
-}
-
-/**
- * @brief Safely decrements the reference count.
- * @return true if this is the final deinitialization (hardware should be turned off).
- */
-static inline bool cfn_sal_shared_ctx_should_deinit(cfn_sal_shared_ctx_t *ctx)
-{
-    if (!ctx || ctx->ref_count == 0)
-    {
-        return false;
-    }
-    ctx->ref_count--;
-    return (ctx->ref_count == 0);
-}
-
 #ifdef __cplusplus
 }
 #endif

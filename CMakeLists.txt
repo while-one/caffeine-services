@@ -138,3 +138,10 @@ set_target_properties(${PROJECT_NAME}-compliance PROPERTIES EXCLUDE_FROM_ALL ON)
 if(TARGET ${PROJECT_NAME}-analyze)
     add_dependencies(${PROJECT_NAME}-analyze ${PROJECT_NAME}-compliance)
 endif()
+
+# 5. Doxygen Documentation
+cfn_add_docs(
+    ${PROJECT_NAME}-docs
+    ${PROJECT_SOURCE_DIR}/include
+    COMMENT "Generating API documentation with Doxygen"
+)

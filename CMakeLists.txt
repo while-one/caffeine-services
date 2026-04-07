@@ -12,7 +12,16 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
+# 3. Code Quality (Formatting & Analysis)
+# Define the absolute universe of sources for this repository
+file(GLOB_RECURSE ALL_UNIVERSE_SOURCES 
+    "${PROJECT_SOURCE_DIR}/include/*.h"
+    "${PROJECT_SOURCE_DIR}/tests/*.cpp"
+    "${PROJECT_SOURCE_DIR}/tests/*.c"
+)
+
 include(${PROJECT_SOURCE_DIR}/caffeine-build/cmake/CaffeineMacros.cmake)
+cfn_add_universe_targets(INPUTS ${ALL_UNIVERSE_SOURCES})
 
 # Useful for IDEs, clang-tidy, and clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -116,7 +125,6 @@ set(ALL_ANALYSIS_SOURCES ${ALL_HEADERS})
 cfn_add_code_quality_targets(
     ${PROJECT_NAME}
     HEADERS_ONLY
-    FORMAT_SOURCES ${ALL_ANALYSIS_SOURCES}
     ANALYSIS_SOURCES ${ALL_HEADERS}
     CPPCHECK_ARGS -I ${PROJECT_SOURCE_DIR}/include -I ${caffeine-hal_SOURCE_DIR}/include
     TIDY_ARGS -I${PROJECT_SOURCE_DIR}/include -I${caffeine-hal_SOURCE_DIR}/include
@@ -142,6 +150,7 @@ endif()
 # 5. Doxygen Documentation
 cfn_add_docs(
     ${PROJECT_NAME}-docs
-    ${PROJECT_SOURCE_DIR}/include
+    INPUTS ${ALL_UNIVERSE_SOURCES} ${PROJECT_SOURCE_DIR}/README.md
+    EXCLUDE_PATTERNS "*/tests/*" "*/test/*"
     COMMENT "Generating API documentation with Doxygen"
 )

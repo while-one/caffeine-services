@@ -148,9 +148,10 @@ if(TARGET ${PROJECT_NAME}-analyze)
 endif()
 
 # 5. Doxygen Documentation
+set(ALL_UNIVERSE_SOURCES_NO_TESTS ${ALL_UNIVERSE_SOURCES})
+list(FILTER ALL_UNIVERSE_SOURCES_NO_TESTS EXCLUDE REGEX ".*/tests/.*")
 cfn_add_docs(
     ${PROJECT_NAME}-docs
-    INPUTS ${ALL_UNIVERSE_SOURCES} ${PROJECT_SOURCE_DIR}/README.md
-    EXCLUDE_PATTERNS "*/tests/*" "*/test/*"
+    INPUTS ${ALL_UNIVERSE_SOURCES_NO_TESTS} ${PROJECT_SOURCE_DIR}/README.md
     COMMENT "Generating API documentation with Doxygen"
 )

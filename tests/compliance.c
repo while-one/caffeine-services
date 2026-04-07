@@ -55,28 +55,17 @@ static const cfn_sal_led_api_t DUMMY_LED_API = {
     .blink_stop = NULL
 };
 
-static const cfn_sal_led_config_t LED_CONFIG =
-{
-    .active_low = true,
-    .custom =  NULL
-};
+static const cfn_sal_led_config_t LED_CONFIG = { .active_low = true, .custom = NULL };
 
-static const cfn_sal_phy_t LED_PHY = CFN_SAL_PHY_INITIALIZER(NULL, (void *) 0x40000000, CFN_HAL_PERIPHERAL_TYPE_GPIO, NULL);
-
+static const cfn_sal_phy_t LED_PHY =
+    CFN_SAL_PHY_INITIALIZER(NULL, (void *) 0x40000000, CFN_HAL_PERIPHERAL_TYPE_GPIO, NULL);
 
 int main(void)
 {
     /* 1. Test Static Initializer Macros */
-    cfn_sal_led_t     led = {0};
+    cfn_sal_led_t led = { 0 };
 
-
-    cfn_sal_led_populate(&led,
-                                         0xDEAD,
-                                         &DUMMY_LED_API,
-                                         &LED_PHY,
-                                         &LED_CONFIG,
-                                         NULL,
-                                         NULL);
+    cfn_sal_led_populate(&led, 0xDEAD, &DUMMY_LED_API, &LED_PHY, &LED_CONFIG, NULL, NULL);
     /* 2. Test Base Initialization (Macro Expansion) */
     cfn_hal_error_code_t err = cfn_sal_led_init(&led);
     if (err != CFN_HAL_ERROR_OK)

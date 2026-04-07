@@ -56,6 +56,14 @@ The library decouples high-level application logic from concrete implementations
 
 ---
 
+## Documentation
+
+The API reference for this repository is generated automatically via Doxygen and hosted on GitHub Pages.
+
+📚 **[View the Caffeine-SAL API Documentation](https://while-one.github.io/caffeine-sal)**
+
+---
+
 ## Development & Analysis
 
 The project includes built-in targets for maintaining code quality. Use the framework's centralized scripts for orchestration:

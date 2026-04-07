@@ -12,6 +12,15 @@
     {
       "name": "unit-tests-gtest",
       "inherits": "base-unit-tests-gtest"
+    },
+    {
+      "name": "universe-all-sources",
+      "displayName": "Universe Target (All Sources)",
+      "inherits": "base-common",
+      "binaryDir": "${sourceDir}/build/universe-all-sources",
+      "cacheVariables": {
+        "CAFFEINE_UNIVERSE_TARGET": "ON"
+      }
     }
   ],
   "testPresets": [

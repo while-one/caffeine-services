@@ -63,6 +63,11 @@ struct cfn_sal_hum_sensor_api_s
     cfn_hal_error_code_t (*start_conversion)(cfn_sal_hum_sensor_t *driver);
     cfn_hal_error_code_t (*set_oversampling)(cfn_sal_hum_sensor_t *driver, uint8_t factor);
     cfn_hal_error_code_t (*get_status)(cfn_sal_hum_sensor_t *driver, uint32_t *status_flags);
+
+    /* Environmental & Device Features */
+    cfn_hal_error_code_t (*enable_heater)(cfn_sal_hum_sensor_t *driver, uint32_t power_mw, uint32_t duration_ms);
+    cfn_hal_error_code_t (*soft_reset)(cfn_sal_hum_sensor_t *driver);
+    cfn_hal_error_code_t (*get_serial_number)(cfn_sal_hum_sensor_t *driver, uint32_t *serial_out);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_sal_hum_sensor_api_s);
@@ -273,6 +278,30 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_hum_sensor_get_status(cfn_sal_hum_se
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_HUM_SENSOR, get_status, driver, error, status_flags);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_hum_sensor_enable_heater(cfn_sal_hum_sensor_t *driver,
+                                                                     uint32_t              power_mw,
+                                                                     uint32_t              duration_ms)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_HUM_SENSOR, enable_heater, driver, error, power_mw, duration_ms);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_hum_sensor_soft_reset(cfn_sal_hum_sensor_t *driver)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SAL_TYPE_HUM_SENSOR, soft_reset, driver, error);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_hum_sensor_get_serial_number(cfn_sal_hum_sensor_t *driver,
+                                                                         uint32_t             *serial_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_HUM_SENSOR, get_serial_number, driver, error, serial_out);
     return error;
 }
 

@@ -28,6 +28,13 @@ typedef enum
     CFN_SAL_FS_MODE_CREATE = CFN_HAL_BIT(3),
 } cfn_sal_fs_mode_t;
 
+typedef enum
+{
+    CFN_SAL_FS_SEEK_SET, /*!< Seek from the start of the file */
+    CFN_SAL_FS_SEEK_CUR, /*!< Seek from the current position */
+    CFN_SAL_FS_SEEK_END, /*!< Seek from the end of the file */
+} cfn_sal_fs_seek_origin_t;
+
 /* Types Structs ----------------------------------------------------*/
 
 typedef void *cfn_sal_fs_file_t;
@@ -62,7 +69,10 @@ struct cfn_sal_fs_api_s
         cfn_sal_fs_t *driver, cfn_sal_fs_file_t file, uint8_t *buffer, size_t len, size_t *read_len);
     cfn_hal_error_code_t (*write)(
         cfn_sal_fs_t *driver, cfn_sal_fs_file_t file, const uint8_t *data, size_t len, size_t *written_len);
-    cfn_hal_error_code_t (*seek)(cfn_sal_fs_t *driver, cfn_sal_fs_file_t file, uint32_t offset, uint8_t origin);
+    cfn_hal_error_code_t (*seek)(cfn_sal_fs_t            *driver,
+                                 cfn_sal_fs_file_t        file,
+                                 uint32_t                 offset,
+                                 cfn_sal_fs_seek_origin_t origin);
     cfn_hal_error_code_t (*tell)(cfn_sal_fs_t *driver, cfn_sal_fs_file_t file, uint32_t *offset_out);
     cfn_hal_error_code_t (*eof)(cfn_sal_fs_t *driver, cfn_sal_fs_file_t file, bool *is_eof);
     cfn_hal_error_code_t (*remove)(cfn_sal_fs_t *driver, const char *path);
@@ -276,10 +286,10 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_fs_format(cfn_sal_fs_t *driver)
     return error;
 }
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_fs_seek(cfn_sal_fs_t     *driver,
-                                                    cfn_sal_fs_file_t file,
-                                                    uint32_t          offset,
-                                                    uint8_t           origin)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_fs_seek(cfn_sal_fs_t            *driver,
+                                                    cfn_sal_fs_file_t        file,
+                                                    uint32_t                 offset,
+                                                    cfn_sal_fs_seek_origin_t origin)
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_FS, seek, driver, error, file, offset, origin);

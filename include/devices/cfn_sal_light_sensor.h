@@ -59,6 +59,8 @@ struct cfn_sal_light_sensor_api_s
     /* Configuration */
     cfn_hal_error_code_t (*set_gain)(cfn_sal_light_sensor_t *driver, uint32_t gain);
     cfn_hal_error_code_t (*set_integration_time)(cfn_sal_light_sensor_t *driver, uint32_t ms);
+    cfn_hal_error_code_t (*set_thresholds)(cfn_sal_light_sensor_t *driver, uint32_t low_lux, uint32_t high_lux);
+    cfn_hal_error_code_t (*set_persistence)(cfn_sal_light_sensor_t *driver, uint8_t consec_hits);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_sal_light_sensor_api_s);
@@ -255,6 +257,23 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_light_sensor_set_integration_time(cf
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_LIGHT_SENSOR, set_integration_time, driver, error, ms);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_light_sensor_set_thresholds(cfn_sal_light_sensor_t *driver,
+                                                                        uint32_t                low_lux,
+                                                                        uint32_t                high_lux)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_LIGHT_SENSOR, set_thresholds, driver, error, low_lux, high_lux);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_light_sensor_set_persistence(cfn_sal_light_sensor_t *driver,
+                                                                         uint8_t                 consec_hits)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_LIGHT_SENSOR, set_persistence, driver, error, consec_hits);
     return error;
 }
 

@@ -340,19 +340,3 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_fs_stat(cfn_sal_fs_t *driver, const 
 #endif
 
 #endif /* CAFFEINE_SAL_SOFTWARE_CFN_SAL_FS_H */
-_VARG(CFN_SAL_TYPE_FS, rmdir, driver, error, path);
-return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_fs_stat(cfn_sal_fs_t *driver, const char *path, void *stat_out)
-{
-    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
-    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_FS, stat, driver, error, path, stat_out);
-    return error;
-}
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* CAFFEINE_SAL_SOFTWARE_CFN_SAL_FS_H */

@@ -276,10 +276,8 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_fs_format(cfn_sal_fs_t *driver)
     return error;
 }
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_fs_seek(cfn_sal_fs_t     *driver,
-                                                    cfn_sal_fs_file_t file,
-                                                    uint32_t          offset,
-                                                    uint8_t           origin)
+CFN_HAL_INLINE cfn_hal_error_code_t
+cfn_sal_fs_seek(cfn_sal_fs_t *driver, cfn_sal_fs_file_t file, uint32_t offset, cfn_sal_fs_seek_origin_t origin)
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_FS, seek, driver, error, file, offset, origin);
@@ -325,6 +323,22 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_fs_rmdir(cfn_sal_fs_t *driver, const
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_FS, rmdir, driver, error, path);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_fs_stat(cfn_sal_fs_t *driver, const char *path, void *stat_out)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_FS, stat, driver, error, path, stat_out);
+    return error;
+}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* CAFFEINE_SAL_SOFTWARE_CFN_SAL_FS_H */
+_VARG(CFN_SAL_TYPE_FS, rmdir, driver, error, path);
     return error;
 }
 

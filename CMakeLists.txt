@@ -14,7 +14,8 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 # 3. Code Quality (Formatting & Analysis)
 # Define the absolute universe of sources for this repository
-file(GLOB_RECURSE ALL_UNIVERSE_SOURCES 
+# Globbing is encouraged for CI quality gates to ensure 100% coverage
+file(GLOB_RECURSE ALL_UNIVERSE_SOURCES CONFIGURE_DEPENDS
     "${PROJECT_SOURCE_DIR}/include/*.h"
     "${PROJECT_SOURCE_DIR}/tests/*.cpp"
     "${PROJECT_SOURCE_DIR}/tests/*.c"
@@ -56,7 +57,37 @@ set_target_properties(${PROJECT_NAME} PROPERTIES EXPORT_NAME services)
 target_link_libraries(${PROJECT_NAME} INTERFACE caffeine::hal)
 
 # Gather all headers for target definition and tooling
-file(GLOB_RECURSE PROJECT_ALL_HEADERS CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/*.h")
+# Actual binary targets MUST explicitly list all sources for determinism
+set(PROJECT_ALL_HEADERS
+    include/cfn_sal.h
+    include/cfn_sal_types.h
+    include/devices/cfn_sal_accel.h
+    include/devices/cfn_sal_analog_sensor.h
+    include/devices/cfn_sal_battery.h
+    include/devices/cfn_sal_button.h
+    include/devices/cfn_sal_color_sensor.h
+    include/devices/cfn_sal_display.h
+    include/devices/cfn_sal_gnss.h
+    include/devices/cfn_sal_gsm.h
+    include/devices/cfn_sal_gyro_sensor.h
+    include/devices/cfn_sal_hum_sensor.h
+    include/devices/cfn_sal_led.h
+    include/devices/cfn_sal_light_sensor.h
+    include/devices/cfn_sal_mag_sensor.h
+    include/devices/cfn_sal_pressure_sensor.h
+    include/devices/cfn_sal_prox_sensor.h
+    include/devices/cfn_sal_temp_sensor.h
+    include/network/cfn_sal_connection.h
+    include/network/cfn_sal_transport.h
+    include/utilities/cfn_sal_at_parser.h
+    include/utilities/cfn_sal_cli.h
+    include/utilities/cfn_sal_collection.h
+    include/utilities/cfn_sal_fs.h
+    include/utilities/cfn_sal_kv.h
+    include/utilities/cfn_sal_logging.h
+    include/utilities/cfn_sal_serialization.h
+    include/utilities/cfn_sal_timekeeping.h
+)
 
 target_sources(
         ${PROJECT_NAME}
@@ -118,14 +149,15 @@ install(
 # Tooling: Formatting & Analysis
 # ==============================================================================
 
-# Gather sources for formatting and analysis (C headers only for this interface repo)
-set(ALL_HEADERS ${PROJECT_ALL_HEADERS})
-set(ALL_ANALYSIS_SOURCES ${ALL_HEADERS})
+# Use globbing for quality gate sources
+file(GLOB_RECURSE ALL_ANALYSIS_SOURCES CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/include/*.h"
+)
 
 cfn_add_code_quality_targets(
     ${PROJECT_NAME}
     HEADERS_ONLY
-    ANALYSIS_SOURCES ${ALL_HEADERS}
+    ANALYSIS_SOURCES ${ALL_ANALYSIS_SOURCES}
     CPPCHECK_ARGS -I ${PROJECT_SOURCE_DIR}/include -I ${caffeine-hal_SOURCE_DIR}/include
     TIDY_ARGS -I${PROJECT_SOURCE_DIR}/include -I${caffeine-hal_SOURCE_DIR}/include
     TIDY_HEADER_FILTER "${PROJECT_SOURCE_DIR}/include/.*"

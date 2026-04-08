@@ -32,7 +32,10 @@ typedef struct
 typedef struct cfn_sal_analog_sensor_s     cfn_sal_analog_sensor_t;
 typedef struct cfn_sal_analog_sensor_api_s cfn_sal_analog_sensor_api_t;
 
-typedef void (*cfn_sal_analog_callback_t)(cfn_sal_analog_sensor_t *driver, uint32_t event, uint32_t error, void *user_arg);
+typedef void (*cfn_sal_analog_callback_t)(cfn_sal_analog_sensor_t *driver,
+                                          uint32_t                 event,
+                                          uint32_t                 error,
+                                          void                    *user_arg);
 
 /**
  * @brief Analog Sensor Virtual Method Table (VMT).
@@ -54,7 +57,7 @@ CFN_SAL_CREATE_DRIVER_TYPE(
 /* Functions inline ------------------------------------------------- */
 
 CFN_HAL_INLINE void cfn_sal_analog_sensor_populate(cfn_sal_analog_sensor_t           *driver,
-                                                   uint32_t                          peripheral_id,
+                                                   uint32_t                           peripheral_id,
                                                    const cfn_sal_analog_sensor_api_t *api,
                                                    const cfn_sal_phy_t               *phy,
                                                    const cfn_sal_analog_config_t     *config,
@@ -73,11 +76,11 @@ CFN_HAL_INLINE void cfn_sal_analog_sensor_populate(cfn_sal_analog_sensor_t      
     driver->cb_user_arg = user_arg;
 }
 
-cfn_hal_error_code_t cfn_sal_analog_sensor_construct(cfn_sal_analog_sensor_t           *driver,
-                                                     const cfn_sal_analog_config_t     *config,
-                                                     const cfn_sal_phy_t               *phy,
-                                                     cfn_sal_analog_callback_t          callback,
-                                                     void                              *user_arg);
+cfn_hal_error_code_t cfn_sal_analog_sensor_construct(cfn_sal_analog_sensor_t       *driver,
+                                                     const cfn_sal_analog_config_t *config,
+                                                     const cfn_sal_phy_t           *phy,
+                                                     cfn_sal_analog_callback_t      callback,
+                                                     void                          *user_arg);
 cfn_hal_error_code_t cfn_sal_analog_sensor_destruct(cfn_sal_analog_sensor_t *driver);
 
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_analog_sensor_init(cfn_sal_analog_sensor_t *driver)

@@ -42,7 +42,8 @@ struct cfn_sal_kv_api_s
 
     /* KV Operations */
     cfn_hal_error_code_t (*set)(cfn_sal_kv_t *driver, const char *key, const void *val, size_t len);
-    cfn_hal_error_code_t (*get)(cfn_sal_kv_t *driver, const char *key, void *val_buf, size_t max_len, size_t *actual_len);
+    cfn_hal_error_code_t (*get)(
+        cfn_sal_kv_t *driver, const char *key, void *val_buf, size_t max_len, size_t *actual_len);
     cfn_hal_error_code_t (*del)(cfn_sal_kv_t *driver, const char *key);
     cfn_hal_error_code_t (*clear)(cfn_sal_kv_t *driver);
     cfn_hal_error_code_t (*get_info)(cfn_sal_kv_t *driver, size_t *used_bytes, size_t *total_bytes);

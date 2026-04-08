@@ -32,7 +32,7 @@ typedef enum
 
 typedef struct
 {
-    uint32_t sync_interval_s; /*!< Automatic synchronization interval */
+    uint32_t sync_interval_s;  /*!< Automatic synchronization interval */
     bool     use_rtc_fallback; /*!< Fallback to hardware RTC if network sync fails */
     void    *custom;
 } cfn_sal_timekeeping_config_t;
@@ -40,8 +40,10 @@ typedef struct
 typedef struct cfn_sal_timekeeping_s     cfn_sal_timekeeping_t;
 typedef struct cfn_sal_timekeeping_api_s cfn_sal_timekeeping_api_t;
 
-typedef void (*cfn_sal_timekeeping_callback_t)(
-    cfn_sal_timekeeping_t *driver, uint32_t event, uint32_t error, void *user_arg);
+typedef void (*cfn_sal_timekeeping_callback_t)(cfn_sal_timekeeping_t *driver,
+                                               uint32_t               event,
+                                               uint32_t               error,
+                                               void                  *user_arg);
 
 /**
  * @brief Timekeeping Virtual Method Table (VMT).
@@ -71,12 +73,12 @@ CFN_SAL_CREATE_DRIVER_TYPE(sal_timekeeping,
 /* Functions inline ------------------------------------------------- */
 
 CFN_HAL_INLINE void cfn_sal_timekeeping_populate(cfn_sal_timekeeping_t              *driver,
-                                                 uint32_t                           peripheral_id,
+                                                 uint32_t                            peripheral_id,
                                                  const cfn_sal_timekeeping_api_t    *api,
-                                                 const cfn_sal_phy_t               *phy,
+                                                 const cfn_sal_phy_t                *phy,
                                                  const cfn_sal_timekeeping_config_t *config,
                                                  cfn_sal_timekeeping_callback_t      callback,
-                                                 void                              *user_arg)
+                                                 void                               *user_arg)
 {
     if (!driver)
     {
@@ -92,9 +94,9 @@ CFN_HAL_INLINE void cfn_sal_timekeeping_populate(cfn_sal_timekeeping_t          
 
 cfn_hal_error_code_t cfn_sal_timekeeping_construct(cfn_sal_timekeeping_t              *driver,
                                                    const cfn_sal_timekeeping_config_t *config,
-                                                   const cfn_sal_phy_t               *phy,
+                                                   const cfn_sal_phy_t                *phy,
                                                    cfn_sal_timekeeping_callback_t      callback,
-                                                   void                              *user_arg);
+                                                   void                               *user_arg);
 cfn_hal_error_code_t cfn_sal_timekeeping_destruct(cfn_sal_timekeeping_t *driver);
 
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_timekeeping_init(cfn_sal_timekeeping_t *driver)
@@ -144,7 +146,8 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_timekeeping_sync_now(cfn_sal_timekee
     return error;
 }
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_timekeeping_is_synchronized(cfn_sal_timekeeping_t *driver, bool *is_sync_out)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_timekeeping_is_synchronized(cfn_sal_timekeeping_t *driver,
+                                                                        bool                  *is_sync_out)
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_TIMEKEEPING, is_synchronized, driver, error, is_sync_out);

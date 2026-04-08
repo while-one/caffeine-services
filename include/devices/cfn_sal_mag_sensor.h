@@ -91,12 +91,12 @@ CFN_SAL_CREATE_DRIVER_TYPE(
 /* Functions inline ------------------------------------------------- */
 
 CFN_HAL_INLINE void cfn_sal_mag_sensor_populate(cfn_sal_mag_sensor_t           *driver,
-                                                uint32_t                         peripheral_id,
+                                                uint32_t                        peripheral_id,
                                                 const cfn_sal_mag_sensor_api_t *api,
-                                                const cfn_sal_phy_t             *phy,
+                                                const cfn_sal_phy_t            *phy,
                                                 const cfn_sal_mag_config_t     *config,
                                                 cfn_sal_mag_callback_t          callback,
-                                                void                            *user_arg)
+                                                void                           *user_arg)
 {
     if (!driver)
     {
@@ -130,14 +130,15 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_mag_sensor_deinit(cfn_sal_mag_sensor
 }
 
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_mag_sensor_read_xyz_ugauss(cfn_sal_mag_sensor_t *driver,
-                                                                      cfn_sal_mag_data_t   *data_out)
+                                                                       cfn_sal_mag_data_t   *data_out)
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_MAG_SENSOR, read_xyz_ugauss, driver, error, data_out);
     return error;
 }
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_mag_sensor_set_range(cfn_sal_mag_sensor_t *driver, cfn_sal_mag_range_t range)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_mag_sensor_set_range(cfn_sal_mag_sensor_t *driver,
+                                                                 cfn_sal_mag_range_t   range)
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_MAG_SENSOR, set_range, driver, error, range);

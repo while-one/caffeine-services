@@ -90,6 +90,11 @@ struct cfn_sal_accel_api_s
     cfn_hal_error_code_t (*read_fifo)(cfn_sal_accel_t *driver, cfn_sal_accel_data_t *data, size_t *count);
     cfn_hal_error_code_t (*config_tap_detection)(cfn_sal_accel_t *driver, bool double_tap, uint8_t threshold);
     cfn_hal_error_code_t (*config_freefall)(cfn_sal_accel_t *driver, uint16_t threshold_mg, uint16_t time_ms);
+    cfn_hal_error_code_t (*config_pedometer)(cfn_sal_accel_t *driver, bool enable);
+    cfn_hal_error_code_t (*read_step_counter)(cfn_sal_accel_t *driver, uint32_t *steps);
+    cfn_hal_error_code_t (*config_significant_motion)(cfn_sal_accel_t *driver, bool enable);
+    cfn_hal_error_code_t (*config_6d_orientation)(cfn_sal_accel_t *driver, bool enable);
+    cfn_hal_error_code_t (*read_6d_orientation)(cfn_sal_accel_t *driver, uint8_t *orientation_code);
     cfn_hal_error_code_t (*get_status)(cfn_sal_accel_t *driver, uint32_t *status_flags);
 };
 
@@ -339,6 +344,42 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_accel_get_status(cfn_sal_accel_t *dr
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_ACCEL, get_status, driver, error, status_flags);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_accel_config_pedometer(cfn_sal_accel_t *driver, bool enable)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_ACCEL, config_pedometer, driver, error, enable);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_accel_read_step_counter(cfn_sal_accel_t *driver, uint32_t *steps)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_ACCEL, read_step_counter, driver, error, steps);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_accel_config_significant_motion(cfn_sal_accel_t *driver, bool enable)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_ACCEL, config_significant_motion, driver, error, enable);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_accel_config_6d_orientation(cfn_sal_accel_t *driver, bool enable)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_ACCEL, config_6d_orientation, driver, error, enable);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_accel_read_6d_orientation(cfn_sal_accel_t *driver,
+                                                                      uint8_t         *orientation_code)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_TYPE_ACCEL, read_6d_orientation, driver, error, orientation_code);
     return error;
 }
 

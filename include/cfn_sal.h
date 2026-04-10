@@ -53,19 +53,6 @@ extern "C"
 
 /* Types Structs ----------------------------------------------------*/
 
-/**
- * @brief Standardized shared state for combination sensors.
- * This structure should be embedded within a composite sensor struct
- * to manage shared hardware resources and initialization counts across
- * multiple polymorphic interfaces.
- */
-typedef struct
-{
-    const cfn_sal_phy_t *phy;            /*!< Shared physical interface handle */
-    uint8_t              init_ref_count; /*!< Number of active interfaces using this PHY */
-    bool                 hw_initialized; /*!< Flag indicating if physical hardware is ready */
-} cfn_sal_combined_state_t;
-
 /* Functions prototypes ---------------------------------------------*/
 
 #ifdef __cplusplus

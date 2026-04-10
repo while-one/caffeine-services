@@ -58,7 +58,7 @@ target_link_libraries(${PROJECT_NAME} INTERFACE caffeine::hal)
 
 # Gather all headers for target definition and tooling
 # Actual binary targets MUST explicitly list all sources for determinism
-set(PROJECT_ALL_HEADERS
+set(CFN_SAL_SOURCES_H
     include/cfn_sal.h
     include/cfn_sal_types.h
     include/devices/cfn_sal_accel.h
@@ -66,6 +66,7 @@ set(PROJECT_ALL_HEADERS
     include/devices/cfn_sal_battery.h
     include/devices/cfn_sal_button.h
     include/devices/cfn_sal_color_sensor.h
+    include/devices/cfn_sal_composite.h
     include/devices/cfn_sal_display.h
     include/devices/cfn_sal_gnss.h
     include/devices/cfn_sal_gsm.h
@@ -95,7 +96,7 @@ target_sources(
         FILE_SET headers
         TYPE HEADERS
         BASE_DIRS include
-        FILES ${PROJECT_ALL_HEADERS}
+        FILES ${CFN_SAL_SOURCES_H}
 )
 
 # --- Testing ---

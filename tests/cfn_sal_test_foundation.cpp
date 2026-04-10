@@ -24,6 +24,7 @@ CFN_SAL_CREATE_DRIVER_TYPE(dummy_sal, dummy_sal_config_t, struct dummy_sal_api_s
 
 CFN_HAL_INLINE void cfn_dummy_sal_populate(cfn_dummy_sal_t              *driver,
                                            uint32_t                      peripheral_id,
+                                           void                         *dependency,
                                            const struct dummy_sal_api_s *api,
                                            const cfn_sal_phy_t          *phy,
                                            const dummy_sal_config_t     *config,
@@ -34,7 +35,8 @@ CFN_HAL_INLINE void cfn_dummy_sal_populate(cfn_dummy_sal_t              *driver,
     {
         return;
     }
-    cfn_hal_base_populate(&driver->base, peripheral_id, peripheral_id, api ? &api->base : NULL, NULL);
+    cfn_hal_base_populate(
+        &driver->base, CFN_SAL_TYPE('D', 'U', 'M'), peripheral_id, api ? &api->base : NULL, NULL, dependency);
     driver->api         = api;
     driver->phy         = phy;
     driver->config      = config;
@@ -59,7 +61,7 @@ TEST(FoundationTest, DriverPopulate)
     dummy_sal_config_t     config = {};
 
     cfn_dummy_sal_t driver{};
-    cfn_dummy_sal_populate(&driver, CFN_SAL_TYPE('D', 'U', 'M'), &api, &phy, &config, NULL, NULL);
+    cfn_dummy_sal_populate(&driver, CFN_SAL_TYPE('D', 'U', 'M'), NULL, &api, &phy, &config, NULL, NULL);
 
     EXPECT_EQ(driver.base.type, CFN_SAL_TYPE('D', 'U', 'M'));
     EXPECT_EQ(driver.base.status, CFN_HAL_DRIVER_STATUS_CONSTRUCTED);

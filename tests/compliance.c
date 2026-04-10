@@ -65,7 +65,7 @@ int main(void)
     /* 1. Test Static Initializer Macros */
     cfn_sal_led_t led = { 0 };
 
-    cfn_sal_led_populate(&led, 0xDEAD, &DUMMY_LED_API, &LED_PHY, &LED_CONFIG, NULL, NULL);
+    cfn_sal_led_populate(&led, 0xDEAD, NULL, &DUMMY_LED_API, &LED_PHY, &LED_CONFIG, NULL, NULL);
     /* 2. Test Base Initialization (Macro Expansion) */
     cfn_hal_error_code_t err = cfn_sal_led_init(&led);
     if (err != CFN_HAL_ERROR_OK)

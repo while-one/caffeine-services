@@ -79,27 +79,21 @@ CFN_SAL_CREATE_DRIVER_TYPE(sal_led, cfn_sal_led_config_t, cfn_sal_led_api_t, cfn
 
 CFN_HAL_INLINE void cfn_sal_led_populate(cfn_sal_led_t              *driver,
                                          uint32_t                    peripheral_id,
+                                         void                       *dependency,
                                          const cfn_sal_led_api_t    *api,
                                          const cfn_sal_phy_t        *phy,
                                          const cfn_sal_led_config_t *config,
                                          cfn_sal_led_callback_t      callback,
                                          void                       *user_arg)
 {
-    if (!driver)
-    {
-        return;
-    }
-    cfn_hal_base_populate(&driver->base, CFN_SAL_TYPE_LED, peripheral_id, api ? &api->base : NULL, NULL);
-    driver->api         = api;
-    driver->phy         = phy;
-    driver->config      = config;
-    driver->cb          = callback;
-    driver->cb_user_arg = user_arg;
+    CFN_HAL_POPULATE_DRIVER(
+        driver, CFN_SAL_TYPE_LED, peripheral_id, NULL, dependency, api, phy, config, callback, user_arg);
 }
 
 cfn_hal_error_code_t cfn_sal_led_construct(cfn_sal_led_t              *driver,
                                            const cfn_sal_led_config_t *config,
                                            const cfn_sal_phy_t        *phy,
+                                           void                       *dependency,
                                            cfn_sal_led_callback_t      callback,
                                            void                       *user_arg);
 cfn_hal_error_code_t cfn_sal_led_destruct(cfn_sal_led_t *driver);

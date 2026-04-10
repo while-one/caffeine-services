@@ -48,7 +48,7 @@ The library decouples high-level application logic from concrete implementations
 *   `caffeine-build/`: Submodule containing centralized build presets, toolchains, scripts, and hardware target definitions.
 *   `include/cfn_sal.h`: Core macros and FourCC definitions.
 *   `include/devices/`: Hardware-agnostic interfaces for physical components.
-    *   `led.h`, `button.h`, `accel.h`, `temp_sensor.h`, `hum_sensor.h`, `battery.h`, `light_sensor.h`, `pressure_sensor.h`, `gnss.h`, `display.h`.
+    *   `led.h`, `button.h`, `accel.h`, `temp_sensor.h`, `hum_sensor.h`, `battery.h`, `light_sensor.h`, `pressure_sensor.h`, `gnss.h`, `display.h`, `composite.h`.
 *   `include/network/`: Generic connectivity and protocol abstractions.
     *   `connection.h` (Link-layer management), `transport.h` (Streaming/Datagram Data).
 *   `include/utilities/`: High-level software services and data structures.

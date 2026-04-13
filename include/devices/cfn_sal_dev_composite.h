@@ -1,10 +1,10 @@
 /**
- * @file cfn_sal_composite.h
+ * @file cfn_sal_dev_composite.h
  * @brief Standardized shared state for composite (multi-function) sensors.
  */
 
-#ifndef CAFFEINE_SAL_DEVICES_CFN_SAL_COMPOSITE_H
-#define CAFFEINE_SAL_DEVICES_CFN_SAL_COMPOSITE_H
+#ifndef CAFFEINE_SAL_DEV_COMPOSITE_H
+#define CAFFEINE_SAL_DEV_COMPOSITE_H
 
 #ifdef __cplusplus
 extern "C"
@@ -27,7 +27,7 @@ typedef struct
     const cfn_sal_phy_t *phy;            /*!< Shared physical interface handle */
     uint8_t              init_ref_count; /*!< Number of active interfaces using this PHY */
     bool                 hw_initialized; /*!< Flag indicating if physical hardware is ready */
-} cfn_sal_composite_shared_t;
+} cfn_sal_dev_composite_shared_t;
 
 /* Functions inline ------------------------------------------------- */
 
@@ -38,7 +38,8 @@ typedef struct
  * @param phy   Pointer to the shared physical interface mapping.
  * @return CFN_HAL_ERROR_OK on success.
  */
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_composite_init(cfn_sal_composite_shared_t *state, const cfn_sal_phy_t *phy)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_composite_init(cfn_sal_dev_composite_shared_t *state,
+                                                               const cfn_sal_phy_t            *phy)
 {
     if ((state == NULL) || (phy == NULL))
     {
@@ -58,7 +59,7 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_composite_init(cfn_sal_composite_sha
  * @param state Pointer to the shared state structure.
  * @return CFN_HAL_ERROR_OK on success.
  */
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_composite_deinit(cfn_sal_composite_shared_t *state)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_composite_deinit(cfn_sal_dev_composite_shared_t *state)
 {
     if (state == NULL)
     {
@@ -76,4 +77,4 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_composite_deinit(cfn_sal_composite_s
 }
 #endif
 
-#endif /* CAFFEINE_SAL_DEVICES_CFN_SAL_COMPOSITE_H */
+#endif /* CAFFEINE_SAL_DEV_COMPOSITE_H */

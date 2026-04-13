@@ -61,33 +61,32 @@ target_link_libraries(${PROJECT_NAME} INTERFACE caffeine::hal)
 set(CFN_SAL_SOURCES_H
     include/cfn_sal.h
     include/cfn_sal_types.h
-    include/devices/cfn_sal_accel.h
-    include/devices/cfn_sal_analog_sensor.h
-    include/devices/cfn_sal_battery.h
-    include/devices/cfn_sal_button.h
-    include/devices/cfn_sal_color_sensor.h
-    include/devices/cfn_sal_composite.h
-    include/devices/cfn_sal_display.h
-    include/devices/cfn_sal_gnss.h
-    include/devices/cfn_sal_gsm.h
-    include/devices/cfn_sal_gyro_sensor.h
-    include/devices/cfn_sal_hum_sensor.h
-    include/devices/cfn_sal_led.h
-    include/devices/cfn_sal_light_sensor.h
-    include/devices/cfn_sal_mag_sensor.h
-    include/devices/cfn_sal_pressure_sensor.h
-    include/devices/cfn_sal_prox_sensor.h
-    include/devices/cfn_sal_temp_sensor.h
-    include/network/cfn_sal_connection.h
-    include/network/cfn_sal_transport.h
-    include/utilities/cfn_sal_at_parser.h
-    include/utilities/cfn_sal_cli.h
-    include/utilities/cfn_sal_collection.h
-    include/utilities/cfn_sal_fs.h
-    include/utilities/cfn_sal_kv.h
-    include/utilities/cfn_sal_logging.h
-    include/utilities/cfn_sal_serialization.h
-    include/utilities/cfn_sal_timekeeping.h
+    include/devices/cfn_sal_dev_accelerometer.h
+    include/devices/cfn_sal_dev_battery.h
+    include/devices/cfn_sal_dev_button.h
+    include/devices/cfn_sal_dev_color.h
+    include/devices/cfn_sal_dev_composite.h
+    include/devices/cfn_sal_dev_display.h
+    include/devices/cfn_sal_dev_gnss.h
+    include/devices/cfn_sal_dev_gsm.h
+    include/devices/cfn_sal_dev_gyroscope.h
+    include/devices/cfn_sal_dev_humidity.h
+    include/devices/cfn_sal_dev_led.h
+    include/devices/cfn_sal_dev_ambient_light.h
+    include/devices/cfn_sal_dev_magnetometer.h
+    include/devices/cfn_sal_dev_pressure.h
+    include/devices/cfn_sal_dev_proximity.h
+    include/devices/cfn_sal_dev_temperature.h
+    include/network/cfn_sal_nwk_connection.h
+    include/network/cfn_sal_nwk_transport.h
+    include/utilities/cfn_sal_utl_at_parser.h
+    include/utilities/cfn_sal_utl_cli.h
+    include/utilities/cfn_sal_utl_collection.h
+    include/utilities/cfn_sal_utl_fs.h
+    include/utilities/cfn_sal_utl_kv.h
+    include/utilities/cfn_sal_utl_logging.h
+    include/utilities/cfn_sal_utl_serialization.h
+    include/utilities/cfn_sal_utl_timekeeping.h
 )
 
 target_sources(

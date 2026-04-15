@@ -49,6 +49,17 @@ typedef struct
     cfn_hal_error_code_t (*handle_interrupt)(cfn_hal_driver_t *base);
 } cfn_sal_dev_api_t;
 
+/**
+ * @brief Compile-time check to ensure a SAL Device API struct is compatible
+ * with the polymorphic device trait. All SAL device APIs must have:
+ * 1. 'cfn_hal_api_base_t base' as their FIRST member (verified via HAL check).
+ * 2. 'cfn_sal_dev_api_t dev' as their SECOND member.
+ */
+#define CFN_SAL_DEV_VMT_CHECK(api_struct_type)                                                                         \
+    CFN_HAL_VMT_CHECK(api_struct_type);                                                                                \
+    CFN_HAL_STATIC_ASSERT(offsetof(api_struct_type, dev) == sizeof(cfn_hal_api_base_t),                                \
+                          "cfn_sal_dev_api_t must be the second member of the VMT struct")
+
 /* Functions prototypes ---------------------------------------------*/
 
 /**

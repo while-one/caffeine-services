@@ -83,7 +83,7 @@ struct cfn_sal_dev_display_api_s
     cfn_hal_error_code_t (*set_orientation)(cfn_sal_dev_display_t *driver, uint8_t orientation);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_display_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_display_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(sal_dev_display,
                            cfn_sal_dev_display_config_t,

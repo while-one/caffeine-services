@@ -51,7 +51,6 @@ typedef void (*cfn_sal_nwk_transport_callback_t)(
 struct cfn_sal_nwk_transport_api_s
 {
     cfn_hal_api_base_t base;
-    cfn_sal_dev_api_t  dev;
 
     /* Synchronous Operations (Blocking) */
     cfn_hal_error_code_t (*send)(cfn_sal_nwk_transport_t *driver, const uint8_t *data, size_t len, uint32_t timeout);

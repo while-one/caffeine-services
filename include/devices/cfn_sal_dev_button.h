@@ -73,7 +73,7 @@ struct cfn_sal_dev_button_api_s
     cfn_hal_error_code_t (*get_hold_time_ms)(cfn_sal_dev_button_t *driver, uint32_t *time_out);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_button_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_button_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(sal_dev_button,
                            cfn_sal_dev_button_config_t,

@@ -72,7 +72,7 @@ struct cfn_sal_dev_led_api_s
     cfn_hal_error_code_t (*set_blink)(cfn_sal_dev_led_t *driver, uint32_t interval_ms, uint32_t count);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_led_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_led_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(
     sal_dev_led, cfn_sal_dev_led_config_t, cfn_sal_dev_led_api_t, cfn_sal_phy_t, cfn_sal_dev_led_callback_t);

@@ -96,7 +96,7 @@ struct cfn_sal_dev_gsm_api_s
                                          size_t             len);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_gsm_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_gsm_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(
     sal_dev_gsm, cfn_sal_dev_gsm_config_t, cfn_sal_dev_gsm_api_t, cfn_sal_phy_t, cfn_sal_dev_gsm_callback_t);

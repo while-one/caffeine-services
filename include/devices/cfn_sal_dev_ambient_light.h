@@ -66,7 +66,7 @@ struct cfn_sal_dev_ambient_light_api_s
     cfn_hal_error_code_t (*get_status)(cfn_sal_dev_ambient_light_t *driver, uint32_t *status_flags);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_ambient_light_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_ambient_light_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(sal_dev_ambient_light,
                            cfn_sal_dev_ambient_light_config_t,

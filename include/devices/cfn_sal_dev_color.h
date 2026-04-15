@@ -66,7 +66,7 @@ struct cfn_sal_dev_color_api_s
     cfn_hal_error_code_t (*get_status)(cfn_sal_dev_color_t *driver, uint32_t *status_flags);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_color_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_color_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(
     sal_dev_color, cfn_sal_dev_color_config_t, cfn_sal_dev_color_api_t, cfn_sal_phy_t, cfn_sal_dev_color_callback_t);

@@ -67,7 +67,6 @@ typedef void (*cfn_sal_nwk_connection_callback_t)(cfn_sal_nwk_connection_t *driv
 struct cfn_sal_nwk_connection_api_s
 {
     cfn_hal_api_base_t base;
-    cfn_sal_dev_api_t  dev;
 
     /* Control */
     cfn_hal_error_code_t (*connect)(cfn_sal_nwk_connection_t *driver);

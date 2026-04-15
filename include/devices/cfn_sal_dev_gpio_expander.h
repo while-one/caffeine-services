@@ -64,7 +64,7 @@ struct cfn_sal_dev_gpio_expander_api_s
     cfn_sal_dev_api_t  dev;
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_gpio_expander_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_gpio_expander_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(sal_dev_gpio_expander,
                            cfn_sal_dev_gpio_expander_config_t,

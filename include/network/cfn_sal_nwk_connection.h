@@ -13,6 +13,7 @@ extern "C"
 
 /* Includes ---------------------------------------------------------*/
 #include "cfn_sal.h"
+#include "cfn_sal_device.h"
 
 /* Defines ----------------------------------------------------------*/
 
@@ -66,6 +67,7 @@ typedef void (*cfn_sal_nwk_connection_callback_t)(cfn_sal_nwk_connection_t *driv
 struct cfn_sal_nwk_connection_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Control */
     cfn_hal_error_code_t (*connect)(cfn_sal_nwk_connection_t *driver);
@@ -241,6 +243,22 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_connection_error_get(cfn_sal_nwk
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     return cfn_hal_base_error_get(&driver->base, CFN_SAL_NWK_TYPE_CONNECTION, error_mask);
+}
+
+/**
+ * @brief Gets the connection hardware ID.
+ */
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_connection_get_id(cfn_sal_nwk_connection_t *driver, uint32_t *id_out)
+{
+    return cfn_sal_dev_get_id(driver, id_out);
+}
+
+/**
+ * @brief Handles connection hardware interrupts.
+ */
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_connection_handle_interrupt(cfn_sal_nwk_connection_t *driver)
+{
+    return cfn_sal_dev_handle_interrupt(driver);
 }
 
 /* Service Specific Functions --------------------------------------- */

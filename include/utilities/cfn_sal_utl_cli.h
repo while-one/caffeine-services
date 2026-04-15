@@ -55,6 +55,7 @@ typedef void (*cfn_sal_utl_cli_callback_t)(cfn_sal_utl_cli_t *driver, uint32_t e
 struct cfn_sal_utl_cli_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Input/Output */
     cfn_hal_error_code_t (*feed_char)(cfn_sal_utl_cli_t *driver, char c);

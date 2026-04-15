@@ -50,6 +50,7 @@ typedef void (*cfn_sal_dev_display_callback_t)(cfn_sal_dev_display_t *driver,
 struct cfn_sal_dev_display_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Power & Control */
     cfn_hal_error_code_t (*turn_on)(cfn_sal_dev_display_t *driver);
@@ -359,6 +360,16 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_display_set_orientation(cfn_sal_
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_DISPLAY, set_orientation, driver, error, orientation);
     return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_display_get_id(cfn_sal_dev_display_t *driver, uint32_t *id_out)
+{
+    return cfn_sal_dev_get_id((void *) driver, id_out);
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_display_handle_interrupt(cfn_sal_dev_display_t *driver)
+{
+    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

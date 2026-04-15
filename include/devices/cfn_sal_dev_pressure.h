@@ -76,6 +76,7 @@ typedef void (*cfn_sal_dev_pressure_callback_t)(cfn_sal_dev_pressure_t *driver,
 struct cfn_sal_dev_pressure_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Measurement Operations */
     cfn_hal_error_code_t (*read_hpa)(cfn_sal_dev_pressure_t *driver, float *hpa_out);
@@ -87,9 +88,6 @@ struct cfn_sal_dev_pressure_api_s
     /* Configuration */
     cfn_hal_error_code_t (*start_conversion)(cfn_sal_dev_pressure_t *driver);
     cfn_hal_error_code_t (*get_status)(cfn_sal_dev_pressure_t *driver, uint32_t *status_flags);
-
-    cfn_hal_error_code_t (*get_id)(cfn_sal_dev_pressure_t *driver, uint32_t *id_out);
-    void (*handle_interrupt)(cfn_sal_dev_pressure_t *driver);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_sal_dev_pressure_api_s);
@@ -287,20 +285,12 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_pressure_get_status(cfn_sal_dev_
 
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_pressure_get_id(cfn_sal_dev_pressure_t *driver, uint32_t *id_out)
 {
-    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
-    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_PRESSURE, get_id, driver, error, id_out);
-    return error;
+    return cfn_sal_dev_get_id((void *) driver, id_out);
 }
 
-CFN_HAL_INLINE void cfn_sal_dev_pressure_handle_interrupt(cfn_sal_dev_pressure_t *driver)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_pressure_handle_interrupt(cfn_sal_dev_pressure_t *driver)
 {
-    if (driver && driver->base.type == CFN_SAL_DEV_TYPE_PRESSURE && driver->api)
-    {
-        if (driver->api->handle_interrupt)
-        {
-            driver->api->handle_interrupt(driver);
-        }
-    }
+    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

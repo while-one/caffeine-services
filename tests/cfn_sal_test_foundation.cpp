@@ -10,6 +10,7 @@
 struct dummy_sal_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 };
 CFN_HAL_VMT_CHECK(struct dummy_sal_api_s);
 

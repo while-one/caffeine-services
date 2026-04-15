@@ -52,6 +52,7 @@ typedef void (*cfn_sal_dev_led_callback_t)(cfn_sal_dev_led_t *driver, uint32_t e
 struct cfn_sal_dev_led_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Basic Operations */
     cfn_hal_error_code_t (*set_state)(cfn_sal_dev_led_t *driver, cfn_sal_dev_led_state_t state);
@@ -283,6 +284,16 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_set_blink(cfn_sal_dev_led_t 
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_LED, set_blink, driver, error, interval_ms, count);
     return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_get_id(cfn_sal_dev_led_t *driver, uint32_t *id_out)
+{
+    return cfn_sal_dev_get_id((void *) driver, id_out);
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_handle_interrupt(cfn_sal_dev_led_t *driver)
+{
+    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

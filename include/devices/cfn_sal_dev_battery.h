@@ -71,6 +71,7 @@ typedef void (*cfn_sal_dev_battery_callback_t)(cfn_sal_dev_battery_t *driver,
 struct cfn_sal_dev_battery_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Measurement Operations */
     cfn_hal_error_code_t (*get_voltage)(cfn_sal_dev_battery_t *driver, float *volts_out);
@@ -317,6 +318,16 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_battery_get_charge_state(cfn_sal
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_BATTERY, get_charge_state, driver, error, state_out);
     return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_battery_get_id(cfn_sal_dev_battery_t *driver, uint32_t *id_out)
+{
+    return cfn_sal_dev_get_id((void *) driver, id_out);
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_battery_handle_interrupt(cfn_sal_dev_battery_t *driver)
+{
+    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

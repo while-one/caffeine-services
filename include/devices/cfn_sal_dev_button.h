@@ -62,6 +62,7 @@ typedef void (*cfn_sal_dev_button_callback_t)(cfn_sal_dev_button_t *driver,
 struct cfn_sal_dev_button_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Basic Operations */
     cfn_hal_error_code_t (*get_state)(cfn_sal_dev_button_t *driver, cfn_sal_dev_button_state_t *state_out);
@@ -266,6 +267,16 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_get_hold_time_ms(cfn_sal_
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_BUTTON, get_hold_time_ms, driver, error, time_out);
     return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_get_id(cfn_sal_dev_button_t *driver, uint32_t *id_out)
+{
+    return cfn_sal_dev_get_id((void *) driver, id_out);
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_handle_interrupt(cfn_sal_dev_button_t *driver)
+{
+    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

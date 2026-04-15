@@ -60,6 +60,7 @@ typedef void (*cfn_sal_dev_gsm_callback_t)(cfn_sal_dev_gsm_t *driver, uint32_t e
 struct cfn_sal_dev_gsm_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Power & Control */
     cfn_hal_error_code_t (*power_on)(cfn_sal_dev_gsm_t *driver);
@@ -375,6 +376,16 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gsm_hangup(cfn_sal_dev_gsm_t *dr
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SAL_DEV_TYPE_GSM, hangup, driver, error);
     return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gsm_get_id(cfn_sal_dev_gsm_t *driver, uint32_t *id_out)
+{
+    return cfn_sal_dev_get_id((void *) driver, id_out);
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gsm_handle_interrupt(cfn_sal_dev_gsm_t *driver)
+{
+    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

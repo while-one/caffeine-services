@@ -13,6 +13,7 @@ extern "C"
 
 /* Includes ---------------------------------------------------------*/
 #include "cfn_sal.h"
+#include "cfn_sal_device.h"
 #include <time.h>
 
 /* Defines ----------------------------------------------------------*/
@@ -51,6 +52,7 @@ typedef void (*cfn_sal_utl_timekeeping_callback_t)(cfn_sal_utl_timekeeping_t *dr
 struct cfn_sal_utl_timekeeping_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Time Operations */
     cfn_hal_error_code_t (*set_time)(cfn_sal_utl_timekeeping_t *driver, time_t timestamp);
@@ -110,6 +112,22 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_deinit(cfn_sal_utl_t
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     return cfn_hal_base_deinit(&driver->base, CFN_SAL_UTL_TYPE_TIMEKEEPING);
+}
+
+/**
+ * @brief Gets the timekeeping hardware ID.
+ */
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_get_id(cfn_sal_utl_timekeeping_t *driver, uint32_t *id_out)
+{
+    return cfn_sal_dev_get_id(driver, id_out);
+}
+
+/**
+ * @brief Handles timekeeping hardware interrupts.
+ */
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_handle_interrupt(cfn_sal_utl_timekeeping_t *driver)
+{
+    return cfn_sal_dev_handle_interrupt(driver);
 }
 
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_set_time(cfn_sal_utl_timekeeping_t *driver,

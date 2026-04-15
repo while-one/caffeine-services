@@ -13,6 +13,7 @@ extern "C"
 
 /* Includes ---------------------------------------------------------*/
 #include "cfn_sal.h"
+#include "cfn_sal_device.h"
 
 /* Defines ----------------------------------------------------------*/
 
@@ -50,6 +51,7 @@ typedef void (*cfn_sal_nwk_transport_callback_t)(
 struct cfn_sal_nwk_transport_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Synchronous Operations (Blocking) */
     cfn_hal_error_code_t (*send)(cfn_sal_nwk_transport_t *driver, const uint8_t *data, size_t len, uint32_t timeout);
@@ -229,8 +231,23 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_error_get(cfn_sal_nwk_
     return cfn_hal_base_error_get(&driver->base, CFN_SAL_NWK_TYPE_TRANSPORT, error_mask);
 }
 
-/* Service Specific Functions --------------------------------------- */
+/**
+ * @brief Gets the transport hardware ID.
+ */
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_get_id(cfn_sal_nwk_transport_t *driver, uint32_t *id_out)
+{
+    return cfn_sal_dev_get_id(driver, id_out);
+}
 
+/**
+ * @brief Handles transport hardware interrupts.
+ */
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_handle_interrupt(cfn_sal_nwk_transport_t *driver)
+{
+    return cfn_sal_dev_handle_interrupt(driver);
+}
+
+/* Service Specific Functions --------------------------------------- */
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_send(cfn_sal_nwk_transport_t *driver,
                                                                const uint8_t           *data,
                                                                size_t                   len,

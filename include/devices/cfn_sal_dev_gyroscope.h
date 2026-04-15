@@ -131,6 +131,7 @@ typedef void (*cfn_sal_dev_gyroscope_callback_t)(cfn_sal_dev_gyroscope_t *driver
 struct cfn_sal_dev_gyroscope_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Measurement Operations */
     cfn_hal_error_code_t (*read_xyz_mdps)(cfn_sal_dev_gyroscope_t *driver, cfn_sal_dev_gyroscope_data_t *data_out);
@@ -141,9 +142,6 @@ struct cfn_sal_dev_gyroscope_api_s
                                       cfn_sal_dev_gyroscope_data_t *data,
                                       size_t                       *count);
     cfn_hal_error_code_t (*get_status)(cfn_sal_dev_gyroscope_t *driver, uint32_t *status_flags);
-    cfn_hal_error_code_t (*get_id)(cfn_sal_dev_gyroscope_t *driver, uint32_t *id_out);
-
-    void (*handle_interrupt)(cfn_sal_dev_gyroscope_t *driver);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_sal_dev_gyroscope_api_s);
@@ -339,20 +337,12 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_get_status(cfn_sal_dev
 
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_get_id(cfn_sal_dev_gyroscope_t *driver, uint32_t *id_out)
 {
-    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
-    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_GYROSCOPE, get_id, driver, error, id_out);
-    return error;
+    return cfn_sal_dev_get_id((void *) driver, id_out);
 }
 
-CFN_HAL_INLINE void cfn_sal_dev_gyroscope_handle_interrupt(cfn_sal_dev_gyroscope_t *driver)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_handle_interrupt(cfn_sal_dev_gyroscope_t *driver)
 {
-    if (driver && driver->base.type == CFN_SAL_DEV_TYPE_GYROSCOPE && driver->api)
-    {
-        if (driver->api->handle_interrupt)
-        {
-            driver->api->handle_interrupt(driver);
-        }
-    }
+    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

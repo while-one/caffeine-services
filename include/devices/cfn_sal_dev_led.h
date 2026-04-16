@@ -23,7 +23,9 @@ extern "C"
 typedef enum
 {
     CFN_SAL_DEV_LED_STATE_OFF = 0,
-    CFN_SAL_DEV_LED_STATE_ON
+    CFN_SAL_DEV_LED_STATE_ON,
+
+    CFN_SAL_DEV_LED_STATE_MAX
 } cfn_sal_dev_led_state_t;
 
 typedef struct
@@ -100,6 +102,16 @@ cfn_hal_error_code_t cfn_sal_dev_led_construct(cfn_sal_dev_led_t              *d
                                                void                           *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_led_destruct(cfn_sal_dev_led_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_config_validate(
+    const cfn_sal_dev_led_t *driver, const cfn_sal_dev_led_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_LED, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_init(cfn_sal_dev_led_t *driver)
 {
     if (!driver)
@@ -107,6 +119,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_init(cfn_sal_dev_led_t *driv
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_led_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_LED);
 }
 
@@ -125,6 +142,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_config_set(cfn_sal_dev_led_t
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_led_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_LED, (const void *) config);
@@ -284,16 +306,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_set_blink(cfn_sal_dev_led_t 
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_LED, set_blink, driver, error, interval_ms, count);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_get_id(cfn_sal_dev_led_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_handle_interrupt(cfn_sal_dev_led_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

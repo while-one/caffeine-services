@@ -24,6 +24,8 @@ typedef enum
 {
     CFN_SAL_DEV_TEMPERATURE_MODE_CONTINUOUS,
     CFN_SAL_DEV_TEMPERATURE_MODE_ONE_SHOT,
+
+    CFN_SAL_DEV_TEMPERATURE_MODE_MAX
 } cfn_sal_dev_temperature_mode_t;
 
 typedef enum
@@ -42,6 +44,8 @@ typedef enum
     CFN_SAL_DEV_TEMPERATURE_OVERSAMPLING_4X,
     CFN_SAL_DEV_TEMPERATURE_OVERSAMPLING_8X,
     CFN_SAL_DEV_TEMPERATURE_OVERSAMPLING_16X,
+
+    CFN_SAL_DEV_TEMPERATURE_OVERSAMPLING_MAX
 } cfn_sal_dev_temperature_oversampling_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -118,6 +122,23 @@ cfn_hal_error_code_t cfn_sal_dev_temperature_construct(cfn_sal_dev_temperature_t
                                                        void                                   *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_temperature_destruct(cfn_sal_dev_temperature_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_temperature_config_validate(
+    const cfn_sal_dev_temperature_t *driver, const cfn_sal_dev_temperature_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+
+    if (config->mode >= CFN_SAL_DEV_TEMPERATURE_MODE_MAX ||
+        config->oversampling >= CFN_SAL_DEV_TEMPERATURE_OVERSAMPLING_MAX)
+    {
+        return CFN_HAL_ERROR_BAD_CONFIG;
+    }
+
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_TEMPERATURE, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_temperature_init(cfn_sal_dev_temperature_t *driver)
 {
     if (!driver)
@@ -125,6 +146,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_temperature_init(cfn_sal_dev_tem
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_temperature_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_TEMPERATURE);
 }
 
@@ -143,6 +169,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_temperature_config_set(cfn_sal_d
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_temperature_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_TEMPERATURE, (const void *) config);
@@ -297,16 +328,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_temperature_soft_reset(cfn_sal_d
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SAL_DEV_TYPE_TEMPERATURE, soft_reset, driver, error);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_temperature_get_id(cfn_sal_dev_temperature_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_temperature_handle_interrupt(cfn_sal_dev_temperature_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

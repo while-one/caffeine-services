@@ -24,6 +24,8 @@ typedef enum
 {
     CFN_SAL_DEV_HUMIDITY_MODE_CONTINUOUS,
     CFN_SAL_DEV_HUMIDITY_MODE_ONE_SHOT,
+
+    CFN_SAL_DEV_HUMIDITY_MODE_MAX
 } cfn_sal_dev_humidity_mode_t;
 
 typedef enum
@@ -40,6 +42,8 @@ typedef enum
     CFN_SAL_DEV_HUMIDITY_OVERSAMPLING_4X,
     CFN_SAL_DEV_HUMIDITY_OVERSAMPLING_8X,
     CFN_SAL_DEV_HUMIDITY_OVERSAMPLING_16X,
+
+    CFN_SAL_DEV_HUMIDITY_OVERSAMPLING_MAX
 } cfn_sal_dev_humidity_oversampling_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -114,6 +118,23 @@ cfn_hal_error_code_t cfn_sal_dev_humidity_construct(cfn_sal_dev_humidity_t      
                                                     void                                *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_humidity_destruct(cfn_sal_dev_humidity_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_humidity_config_validate(
+    const cfn_sal_dev_humidity_t *driver, const cfn_sal_dev_humidity_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+
+    if (config->mode >= CFN_SAL_DEV_HUMIDITY_MODE_MAX ||
+        config->oversampling >= CFN_SAL_DEV_HUMIDITY_OVERSAMPLING_MAX)
+    {
+        return CFN_HAL_ERROR_BAD_CONFIG;
+    }
+
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_HUMIDITY, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_humidity_init(cfn_sal_dev_humidity_t *driver)
 {
     if (!driver)
@@ -121,6 +142,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_humidity_init(cfn_sal_dev_humidi
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_humidity_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_HUMIDITY);
 }
 
@@ -139,6 +165,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_humidity_config_set(cfn_sal_dev_
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_humidity_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_HUMIDITY, (const void *) config);
@@ -282,16 +313,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_humidity_soft_reset(cfn_sal_dev_
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SAL_DEV_TYPE_HUMIDITY, soft_reset, driver, error);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_humidity_get_id(cfn_sal_dev_humidity_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_humidity_handle_interrupt(cfn_sal_dev_humidity_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

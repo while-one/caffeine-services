@@ -32,7 +32,9 @@ typedef enum
 typedef enum
 {
     CFN_SAL_DEV_BUTTON_STATE_RELEASED = 0,
-    CFN_SAL_DEV_BUTTON_STATE_PRESSED
+    CFN_SAL_DEV_BUTTON_STATE_PRESSED,
+
+    CFN_SAL_DEV_BUTTON_STATE_MAX
 } cfn_sal_dev_button_state_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -104,6 +106,16 @@ cfn_hal_error_code_t cfn_sal_dev_button_construct(cfn_sal_dev_button_t          
                                                   void                              *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_button_destruct(cfn_sal_dev_button_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_config_validate(
+    const cfn_sal_dev_button_t *driver, const cfn_sal_dev_button_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_BUTTON, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_init(cfn_sal_dev_button_t *driver)
 {
     if (!driver)
@@ -111,6 +123,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_init(cfn_sal_dev_button_t
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_button_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_BUTTON);
 }
 
@@ -129,6 +146,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_config_set(cfn_sal_dev_bu
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_button_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_BUTTON, (const void *) config);
@@ -267,16 +289,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_get_hold_time_ms(cfn_sal_
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_BUTTON, get_hold_time_ms, driver, error, time_out);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_get_id(cfn_sal_dev_button_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_handle_interrupt(cfn_sal_dev_button_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

@@ -96,6 +96,16 @@ cfn_hal_error_code_t cfn_sal_dev_gpio_expander_construct(cfn_sal_dev_gpio_expand
 
 cfn_hal_error_code_t cfn_sal_dev_gpio_expander_destruct(cfn_sal_dev_gpio_expander_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gpio_expander_config_validate(
+    const cfn_sal_dev_gpio_expander_t *driver, const cfn_sal_dev_gpio_expander_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_GPIO_EXPANDER, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gpio_expander_init(cfn_sal_dev_gpio_expander_t *driver)
 {
     if (!driver)
@@ -103,6 +113,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gpio_expander_init(cfn_sal_dev_g
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_gpio_expander_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_GPIO_EXPANDER);
 }
 
@@ -115,15 +130,20 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gpio_expander_deinit(cfn_sal_dev
     return cfn_hal_base_deinit(&driver->base, CFN_SAL_DEV_TYPE_GPIO_EXPANDER);
 }
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gpio_expander_handle_interrupt(cfn_sal_dev_gpio_expander_t *driver)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gpio_expander_config_set(cfn_sal_dev_gpio_expander_t              *driver,
+                                                                         const cfn_sal_dev_gpio_expander_config_t *config)
 {
-    return cfn_sal_dev_handle_interrupt((void *) driver);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gpio_expander_get_id(cfn_sal_dev_gpio_expander_t *driver,
-                                                                     uint32_t                    *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
+    if (!driver)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_gpio_expander_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
+    driver->config = config;
+    return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_GPIO_EXPANDER, (const void *) config);
 }
 
 #ifdef __cplusplus

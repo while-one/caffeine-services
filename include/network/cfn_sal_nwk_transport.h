@@ -105,6 +105,16 @@ cfn_hal_error_code_t cfn_sal_nwk_transport_construct(cfn_sal_nwk_transport_t    
                                                      void                                 *user_arg);
 cfn_hal_error_code_t cfn_sal_nwk_transport_destruct(cfn_sal_nwk_transport_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_config_validate(
+    const cfn_sal_nwk_transport_t *driver, const cfn_sal_nwk_transport_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_NWK_TYPE_TRANSPORT, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_init(cfn_sal_nwk_transport_t *driver)
 {
     if (!driver)
@@ -112,6 +122,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_init(cfn_sal_nwk_trans
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_nwk_transport_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_NWK_TYPE_TRANSPORT);
 }
 
@@ -130,6 +145,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_config_set(cfn_sal_nwk
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_nwk_transport_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_NWK_TYPE_TRANSPORT, (const void *) config);
@@ -228,22 +248,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_error_get(cfn_sal_nwk_
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     return cfn_hal_base_error_get(&driver->base, CFN_SAL_NWK_TYPE_TRANSPORT, error_mask);
-}
-
-/**
- * @brief Gets the transport hardware ID.
- */
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_get_id(cfn_sal_nwk_transport_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id(driver, id_out);
-}
-
-/**
- * @brief Handles transport hardware interrupts.
- */
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_handle_interrupt(cfn_sal_nwk_transport_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt(driver);
 }
 
 /* Service Specific Functions --------------------------------------- */

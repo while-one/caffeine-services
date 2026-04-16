@@ -97,6 +97,16 @@ cfn_hal_error_code_t cfn_sal_dev_ambient_light_construct(cfn_sal_dev_ambient_lig
                                                          void                                     *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_ambient_light_destruct(cfn_sal_dev_ambient_light_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_config_validate(
+    const cfn_sal_dev_ambient_light_t *driver, const cfn_sal_dev_ambient_light_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_AMBIENT_LIGHT, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_init(cfn_sal_dev_ambient_light_t *driver)
 {
     if (!driver)
@@ -104,6 +114,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_init(cfn_sal_dev_a
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_ambient_light_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_AMBIENT_LIGHT);
 }
 
@@ -122,6 +137,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_config_set(
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_ambient_light_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_AMBIENT_LIGHT, (const void *) config);
@@ -254,17 +274,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_get_status(cfn_sal
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_AMBIENT_LIGHT, get_status, driver, error, status_flags);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_get_id(cfn_sal_dev_ambient_light_t *driver,
-                                                                     uint32_t                    *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_handle_interrupt(cfn_sal_dev_ambient_light_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

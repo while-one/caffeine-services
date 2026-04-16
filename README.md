@@ -70,10 +70,10 @@ The project includes built-in targets for maintaining code quality. Use the fram
 
 ```bash
 # Full Quality Gate (Format -> Analyze -> Build -> Test)
-./caffeine-build/scripts/ci.sh all
+python3 ./caffeine-build/scripts/ci.py all
 
 # Run only unit tests
-./caffeine-build/scripts/ci.sh test unit-tests-gtest
+python3 ./caffeine-build/scripts/ci.py test unit-tests-gtest
 ```
 
 ---

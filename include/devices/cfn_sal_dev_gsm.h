@@ -37,7 +37,9 @@ typedef enum
     CFN_SAL_DEV_GSM_NET_SEARCHING,
     CFN_SAL_DEV_GSM_NET_REGISTRATION_DENIED,
     CFN_SAL_DEV_GSM_NET_UNKNOWN,
-    CFN_SAL_DEV_GSM_NET_REGISTERED_ROAMING
+    CFN_SAL_DEV_GSM_NET_REGISTERED_ROAMING,
+
+    CFN_SAL_DEV_GSM_NET_MAX
 } cfn_sal_dev_gsm_net_status_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -124,6 +126,16 @@ cfn_hal_error_code_t cfn_sal_dev_gsm_construct(cfn_sal_dev_gsm_t              *d
                                                void                           *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_gsm_destruct(cfn_sal_dev_gsm_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gsm_config_validate(
+    const cfn_sal_dev_gsm_t *driver, const cfn_sal_dev_gsm_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_GSM, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gsm_init(cfn_sal_dev_gsm_t *driver)
 {
     if (!driver)
@@ -131,6 +143,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gsm_init(cfn_sal_dev_gsm_t *driv
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_gsm_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_GSM);
 }
 
@@ -149,6 +166,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gsm_config_set(cfn_sal_dev_gsm_t
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_gsm_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_GSM, (const void *) config);
@@ -376,16 +398,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gsm_hangup(cfn_sal_dev_gsm_t *dr
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SAL_DEV_TYPE_GSM, hangup, driver, error);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gsm_get_id(cfn_sal_dev_gsm_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gsm_handle_interrupt(cfn_sal_dev_gsm_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

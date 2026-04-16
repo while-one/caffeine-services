@@ -35,6 +35,8 @@ typedef enum
     CFN_SAL_DEV_ACCELEROMETER_MODE_NORMAL,
     CFN_SAL_DEV_ACCELEROMETER_MODE_LOW_POWER,
     CFN_SAL_DEV_ACCELEROMETER_MODE_STANDBY,
+
+    CFN_SAL_DEV_ACCELEROMETER_MODE_MAX
 } cfn_sal_dev_accelerometer_mode_t;
 
 typedef enum
@@ -44,6 +46,8 @@ typedef enum
     CFN_SAL_DEV_ACCELEROMETER_RESOLUTION_12_BIT,
     CFN_SAL_DEV_ACCELEROMETER_RESOLUTION_14_BIT,
     CFN_SAL_DEV_ACCELEROMETER_RESOLUTION_16_BIT,
+
+    CFN_SAL_DEV_ACCELEROMETER_RESOLUTION_MAX
 } cfn_sal_dev_accelerometer_resolution_t;
 
 typedef enum
@@ -52,6 +56,8 @@ typedef enum
     CFN_SAL_DEV_ACCELEROMETER_FILTER_HIGH_PASS,
     CFN_SAL_DEV_ACCELEROMETER_FILTER_LOW_PASS,
     CFN_SAL_DEV_ACCELEROMETER_FILTER_BAND_PASS,
+
+    CFN_SAL_DEV_ACCELEROMETER_FILTER_MAX
 } cfn_sal_dev_accelerometer_filter_t;
 
 typedef enum
@@ -60,6 +66,8 @@ typedef enum
     CFN_SAL_DEV_ACCELEROMETER_RANGE_4G,
     CFN_SAL_DEV_ACCELEROMETER_RANGE_8G,
     CFN_SAL_DEV_ACCELEROMETER_RANGE_16G,
+
+    CFN_SAL_DEV_ACCELEROMETER_RANGE_MAX
 } cfn_sal_dev_accelerometer_range_t;
 
 typedef enum
@@ -72,12 +80,16 @@ typedef enum
     CFN_SAL_DEV_ACCELEROMETER_ODR_200_HZ,
     CFN_SAL_DEV_ACCELEROMETER_ODR_400_HZ,
     CFN_SAL_DEV_ACCELEROMETER_ODR_1000_HZ,
+
+    CFN_SAL_DEV_ACCELEROMETER_ODR_MAX
 } cfn_sal_dev_accelerometer_odr_t;
 
 typedef enum
 {
     CFN_SAL_DEV_ACCELEROMETER_BW_ODR_DIV_2,
     CFN_SAL_DEV_ACCELEROMETER_BW_ODR_DIV_4,
+
+    CFN_SAL_DEV_ACCELEROMETER_BW_MAX
 } cfn_sal_dev_accelerometer_bw_t;
 
 typedef enum
@@ -86,6 +98,8 @@ typedef enum
     CFN_SAL_DEV_ACCELEROMETER_FIFO_MODE_FIFO,
     CFN_SAL_DEV_ACCELEROMETER_FIFO_MODE_STREAM,
     CFN_SAL_DEV_ACCELEROMETER_FIFO_MODE_TRIGGER,
+
+    CFN_SAL_DEV_ACCELEROMETER_FIFO_MODE_MAX
 } cfn_sal_dev_accelerometer_fifo_mode_t;
 
 // Which physical interrupt pin on the sensor to use
@@ -93,6 +107,8 @@ typedef enum
 {
     CFN_SAL_DEV_ACCELEROMETER_INT_PIN_1,
     CFN_SAL_DEV_ACCELEROMETER_INT_PIN_2,
+
+    CFN_SAL_DEV_ACCELEROMETER_INT_PIN_MAX
 } cfn_sal_dev_accelerometer_int_pin_t;
 
 // Electrical mode of the interrupt pin
@@ -100,6 +116,8 @@ typedef enum
 {
     CFN_SAL_DEV_ACCELEROMETER_INT_MODE_PUSH_PULL,
     CFN_SAL_DEV_ACCELEROMETER_INT_MODE_OPEN_DRAIN,
+
+    CFN_SAL_DEV_ACCELEROMETER_INT_MODE_MAX
 } cfn_sal_dev_accelerometer_int_mode_t;
 
 // Active level of the interrupt pin
@@ -107,6 +125,8 @@ typedef enum
 {
     CFN_SAL_DEV_ACCELEROMETER_INT_LEVEL_ACTIVE_LOW,
     CFN_SAL_DEV_ACCELEROMETER_INT_LEVEL_ACTIVE_HIGH,
+
+    CFN_SAL_DEV_ACCELEROMETER_INT_LEVEL_MAX
 } cfn_sal_dev_accelerometer_int_level_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -222,6 +242,31 @@ cfn_hal_error_code_t cfn_sal_dev_accelerometer_construct(cfn_sal_dev_acceleromet
                                                          void                                     *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_accelerometer_destruct(cfn_sal_dev_accelerometer_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_accelerometer_config_validate(
+    const cfn_sal_dev_accelerometer_t *driver, const cfn_sal_dev_accelerometer_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+
+    if (config->mode >= CFN_SAL_DEV_ACCELEROMETER_MODE_MAX ||
+        config->resolution >= CFN_SAL_DEV_ACCELEROMETER_RESOLUTION_MAX ||
+        config->odr >= CFN_SAL_DEV_ACCELEROMETER_ODR_MAX ||
+        config->bandwidth >= CFN_SAL_DEV_ACCELEROMETER_BW_MAX ||
+        config->range >= CFN_SAL_DEV_ACCELEROMETER_RANGE_MAX ||
+        config->fifo_mode >= CFN_SAL_DEV_ACCELEROMETER_FIFO_MODE_MAX ||
+        config->int1_config.mode >= CFN_SAL_DEV_ACCELEROMETER_INT_MODE_MAX ||
+        config->int1_config.level >= CFN_SAL_DEV_ACCELEROMETER_INT_LEVEL_MAX ||
+        config->int2_config.mode >= CFN_SAL_DEV_ACCELEROMETER_INT_MODE_MAX ||
+        config->int2_config.level >= CFN_SAL_DEV_ACCELEROMETER_INT_LEVEL_MAX)
+    {
+        return CFN_HAL_ERROR_BAD_CONFIG;
+    }
+
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_ACCELEROMETER, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_accelerometer_init(cfn_sal_dev_accelerometer_t *driver)
 {
     if (!driver)
@@ -229,6 +274,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_accelerometer_init(cfn_sal_dev_a
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_accelerometer_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_ACCELEROMETER);
 }
 
@@ -247,6 +297,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_accelerometer_config_set(
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_accelerometer_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_ACCELEROMETER, (const void *) config);
@@ -398,16 +453,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_accelerometer_read_6d_orientatio
     return error;
 }
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_accelerometer_get_id(cfn_sal_dev_accelerometer_t *driver,
-                                                                     uint32_t                    *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_accelerometer_handle_interrupt(cfn_sal_dev_accelerometer_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt((void *) driver);
-}
 #ifdef __cplusplus
 }
 #endif

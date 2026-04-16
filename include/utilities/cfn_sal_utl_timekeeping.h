@@ -58,13 +58,14 @@ struct cfn_sal_utl_timekeeping_api_s
     cfn_hal_error_code_t (*set_time)(cfn_sal_utl_timekeeping_t *driver, time_t timestamp);
     cfn_hal_error_code_t (*get_time)(cfn_sal_utl_timekeeping_t *driver, time_t *timestamp_out);
     cfn_hal_error_code_t (*get_ms)(cfn_sal_utl_timekeeping_t *driver, uint64_t *ms_out);
+    cfn_hal_error_code_t (*delay_ms)(cfn_sal_utl_timekeeping_t *driver, uint32_t ms);
 
     /* Synchronization */
     cfn_hal_error_code_t (*sync_now)(cfn_sal_utl_timekeeping_t *driver);
     cfn_hal_error_code_t (*is_synchronized)(cfn_sal_utl_timekeeping_t *driver, bool *is_sync_out);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_utl_timekeeping_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_utl_timekeeping_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(sal_utl_timekeeping,
                            cfn_sal_utl_timekeeping_config_t,
@@ -95,6 +96,16 @@ cfn_hal_error_code_t cfn_sal_utl_timekeeping_construct(cfn_sal_utl_timekeeping_t
                                                        void                                   *user_arg);
 cfn_hal_error_code_t cfn_sal_utl_timekeeping_destruct(cfn_sal_utl_timekeeping_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_config_validate(
+    const cfn_sal_utl_timekeeping_t *driver, const cfn_sal_utl_timekeeping_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_UTL_TYPE_TIMEKEEPING, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_init(cfn_sal_utl_timekeeping_t *driver)
 {
     if (!driver)
@@ -102,6 +113,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_init(cfn_sal_utl_tim
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_utl_timekeeping_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_UTL_TYPE_TIMEKEEPING);
 }
 
@@ -114,22 +130,36 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_deinit(cfn_sal_utl_t
     return cfn_hal_base_deinit(&driver->base, CFN_SAL_UTL_TYPE_TIMEKEEPING);
 }
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_config_set(cfn_sal_utl_timekeeping_t              *driver,
+                                                                       const cfn_sal_utl_timekeeping_config_t *config)
+{
+    if (!driver)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_utl_timekeeping_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
+    driver->config = config;
+    return cfn_hal_base_config_set(&driver->base, CFN_SAL_UTL_TYPE_TIMEKEEPING, (const void *) config);
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_config_get(cfn_sal_utl_timekeeping_t        *driver,
+                                                                       cfn_sal_utl_timekeeping_config_t *config)
+{
+    if (!driver || !config || !driver->config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    *config = *(driver->config);
+    return CFN_HAL_ERROR_OK;
+}
+
 /**
  * @brief Gets the timekeeping hardware ID.
  */
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_get_id(cfn_sal_utl_timekeeping_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id(driver, id_out);
-}
-
-/**
- * @brief Handles timekeeping hardware interrupts.
- */
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_handle_interrupt(cfn_sal_utl_timekeeping_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt(driver);
-}
-
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_set_time(cfn_sal_utl_timekeeping_t *driver,
                                                                      time_t                     timestamp)
 {
@@ -150,6 +180,13 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_get_ms(cfn_sal_utl_t
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_UTL_TYPE_TIMEKEEPING, get_ms, driver, error, ms_out);
+    return error;
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_timekeeping_delay_ms(cfn_sal_utl_timekeeping_t *driver, uint32_t ms)
+{
+    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
+    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_UTL_TYPE_TIMEKEEPING, delay_ms, driver, error, ms);
     return error;
 }
 

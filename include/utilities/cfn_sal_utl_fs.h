@@ -33,6 +33,8 @@ typedef enum
     CFN_SAL_UTL_FILESYSTEM_SEEK_SET, /*!< Seek from the start of the file */
     CFN_SAL_UTL_FILESYSTEM_SEEK_CUR, /*!< Seek from the current position */
     CFN_SAL_UTL_FILESYSTEM_SEEK_END, /*!< Seek from the end of the file */
+
+    CFN_SAL_UTL_FILESYSTEM_SEEK_MAX
 } cfn_sal_utl_filesystem_seek_origin_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -127,6 +129,16 @@ cfn_hal_error_code_t cfn_sal_utl_filesystem_construct(cfn_sal_utl_filesystem_t  
                                                       void                                  *user_arg);
 cfn_hal_error_code_t cfn_sal_utl_filesystem_destruct(cfn_sal_utl_filesystem_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_filesystem_config_validate(
+    const cfn_sal_utl_filesystem_t *driver, const cfn_sal_utl_filesystem_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_UTL_TYPE_FILESYSTEM, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_filesystem_init(cfn_sal_utl_filesystem_t *driver)
 {
     if (!driver)
@@ -134,6 +146,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_filesystem_init(cfn_sal_utl_file
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_utl_filesystem_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_UTL_TYPE_FILESYSTEM);
 }
 
@@ -152,6 +169,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_filesystem_config_set(cfn_sal_ut
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_utl_filesystem_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_UTL_TYPE_FILESYSTEM, (const void *) config);

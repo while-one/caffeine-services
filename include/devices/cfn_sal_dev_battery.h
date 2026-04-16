@@ -36,7 +36,9 @@ typedef enum
     CFN_SAL_DEV_BATTERY_STATUS_CHARGING,
     CFN_SAL_DEV_BATTERY_STATUS_DISCHARGING,
     CFN_SAL_DEV_BATTERY_STATUS_NOT_CHARGING,
-    CFN_SAL_DEV_BATTERY_STATUS_FULL
+    CFN_SAL_DEV_BATTERY_STATUS_FULL,
+
+    CFN_SAL_DEV_BATTERY_STATUS_MAX
 } cfn_sal_dev_battery_status_t;
 
 typedef enum
@@ -44,7 +46,9 @@ typedef enum
     CFN_SAL_DEV_BATTERY_STATE_DISCHARGING = 0,
     CFN_SAL_DEV_BATTERY_STATE_CHARGING,
     CFN_SAL_DEV_BATTERY_STATE_FULL,
-    CFN_SAL_DEV_BATTERY_STATE_FAULT
+    CFN_SAL_DEV_BATTERY_STATE_FAULT,
+
+    CFN_SAL_DEV_BATTERY_STATE_MAX
 } cfn_sal_dev_battery_charge_state_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -121,6 +125,16 @@ cfn_hal_error_code_t cfn_sal_dev_battery_construct(cfn_sal_dev_battery_t        
                                                    void                               *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_battery_destruct(cfn_sal_dev_battery_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_battery_config_validate(
+    const cfn_sal_dev_battery_t *driver, const cfn_sal_dev_battery_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_BATTERY, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_battery_init(cfn_sal_dev_battery_t *driver)
 {
     if (!driver)
@@ -128,6 +142,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_battery_init(cfn_sal_dev_battery
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_battery_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_BATTERY);
 }
 
@@ -146,6 +165,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_battery_config_set(cfn_sal_dev_b
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_battery_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_BATTERY, (const void *) config);
@@ -318,16 +342,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_battery_get_charge_state(cfn_sal
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_BATTERY, get_charge_state, driver, error, state_out);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_battery_get_id(cfn_sal_dev_battery_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_battery_handle_interrupt(cfn_sal_dev_battery_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

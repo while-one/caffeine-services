@@ -27,20 +27,26 @@ typedef enum
     CFN_SAL_UTL_LOGGING_LEVEL_INFO,
     CFN_SAL_UTL_LOGGING_LEVEL_WARN,
     CFN_SAL_UTL_LOGGING_LEVEL_ERROR,
-    CFN_SAL_UTL_LOGGING_LEVEL_FATAL
+    CFN_SAL_UTL_LOGGING_LEVEL_FATAL,
+
+    CFN_SAL_UTL_LOGGING_LEVEL_MAX
 } cfn_sal_utl_logging_level_t;
 
 typedef enum
 {
     CFN_SAL_UTL_LOGGING_TARGET_CONSOLE = 0,
     CFN_SAL_UTL_LOGGING_TARGET_FILE,
-    CFN_SAL_UTL_LOGGING_TARGET_NETWORK
+    CFN_SAL_UTL_LOGGING_TARGET_NETWORK,
+
+    CFN_SAL_UTL_LOGGING_TARGET_MAX
 } cfn_sal_utl_logging_target_t;
 
 typedef enum
 {
     CFN_SAL_UTL_LOGGING_FORMAT_TEXT = 0,
-    CFN_SAL_UTL_LOGGING_FORMAT_JSON
+    CFN_SAL_UTL_LOGGING_FORMAT_JSON,
+
+    CFN_SAL_UTL_LOGGING_FORMAT_MAX
 } cfn_sal_utl_logging_format_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -112,6 +118,24 @@ cfn_hal_error_code_t cfn_sal_utl_logging_construct(cfn_sal_utl_logging_t        
                                                    void                               *user_arg);
 cfn_hal_error_code_t cfn_sal_utl_logging_destruct(cfn_sal_utl_logging_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_config_validate(
+    const cfn_sal_utl_logging_t *driver, const cfn_sal_utl_logging_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+
+    if (config->level >= CFN_SAL_UTL_LOGGING_LEVEL_MAX ||
+        config->target >= CFN_SAL_UTL_LOGGING_TARGET_MAX ||
+        config->format >= CFN_SAL_UTL_LOGGING_FORMAT_MAX)
+    {
+        return CFN_HAL_ERROR_BAD_CONFIG;
+    }
+
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_UTL_TYPE_LOGGING, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_init(cfn_sal_utl_logging_t *driver)
 {
     if (!driver)
@@ -119,6 +143,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_init(cfn_sal_utl_logging
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_utl_logging_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_UTL_TYPE_LOGGING);
 }
 
@@ -137,6 +166,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_config_set(cfn_sal_utl_l
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_utl_logging_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_UTL_TYPE_LOGGING, (const void *) config);

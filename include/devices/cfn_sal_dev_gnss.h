@@ -36,7 +36,9 @@ typedef enum
     CFN_SAL_DEV_GNSS_FIX_3D,
     CFN_SAL_DEV_GNSS_FIX_DGPS,
     CFN_SAL_DEV_GNSS_FIX_RTK_FIXED,
-    CFN_SAL_DEV_GNSS_FIX_RTK_FLOAT
+    CFN_SAL_DEV_GNSS_FIX_RTK_FLOAT,
+
+    CFN_SAL_DEV_GNSS_FIX_MAX
 } cfn_sal_dev_gnss_fix_type_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -124,6 +126,16 @@ cfn_hal_error_code_t cfn_sal_dev_gnss_construct(cfn_sal_dev_gnss_t              
                                                 void                            *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_gnss_destruct(cfn_sal_dev_gnss_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gnss_config_validate(
+    const cfn_sal_dev_gnss_t *driver, const cfn_sal_dev_gnss_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_GNSS, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gnss_init(cfn_sal_dev_gnss_t *driver)
 {
     if (!driver)
@@ -131,6 +143,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gnss_init(cfn_sal_dev_gnss_t *dr
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_gnss_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_GNSS);
 }
 
@@ -149,6 +166,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gnss_config_set(cfn_sal_dev_gnss
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_gnss_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_GNSS, (const void *) config);
@@ -343,16 +365,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gnss_set_power_mode(cfn_sal_dev_
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_GNSS, set_power_mode, driver, error, mode);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gnss_get_id(cfn_sal_dev_gnss_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gnss_handle_interrupt(cfn_sal_dev_gnss_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt((void *) driver);
 }
 
 #ifdef __cplusplus

@@ -34,7 +34,9 @@ typedef enum
     CFN_SAL_NWK_CONNECTION_STATUS_DISCONNECTED = 0,
     CFN_SAL_NWK_CONNECTION_STATUS_CONNECTING,
     CFN_SAL_NWK_CONNECTION_STATUS_CONNECTED,
-    CFN_SAL_NWK_CONNECTION_STATUS_ERROR
+    CFN_SAL_NWK_CONNECTION_STATUS_ERROR,
+
+    CFN_SAL_NWK_CONNECTION_STATUS_MAX
 } cfn_sal_nwk_connection_status_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -119,6 +121,16 @@ cfn_hal_error_code_t cfn_sal_nwk_connection_construct(cfn_sal_nwk_connection_t  
                                                       void                                  *user_arg);
 cfn_hal_error_code_t cfn_sal_nwk_connection_destruct(cfn_sal_nwk_connection_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_connection_config_validate(
+    const cfn_sal_nwk_connection_t *driver, const cfn_sal_nwk_connection_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_NWK_TYPE_CONNECTION, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_connection_init(cfn_sal_nwk_connection_t *driver)
 {
     if (!driver)
@@ -126,6 +138,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_connection_init(cfn_sal_nwk_conn
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_nwk_connection_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_NWK_TYPE_CONNECTION);
 }
 
@@ -144,6 +161,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_connection_config_set(cfn_sal_nw
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_nwk_connection_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_NWK_TYPE_CONNECTION, (const void *) config);
@@ -242,22 +264,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_connection_error_get(cfn_sal_nwk
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     return cfn_hal_base_error_get(&driver->base, CFN_SAL_NWK_TYPE_CONNECTION, error_mask);
-}
-
-/**
- * @brief Gets the connection hardware ID.
- */
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_connection_get_id(cfn_sal_nwk_connection_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id(driver, id_out);
-}
-
-/**
- * @brief Handles connection hardware interrupts.
- */
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_connection_handle_interrupt(cfn_sal_nwk_connection_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt(driver);
 }
 
 /* Service Specific Functions --------------------------------------- */

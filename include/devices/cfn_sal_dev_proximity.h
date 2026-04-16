@@ -249,16 +249,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_proximity_get_status(cfn_sal_dev
     return error;
 }
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_proximity_get_id(cfn_sal_dev_proximity_t *driver, uint32_t *id_out)
-{
-    return cfn_sal_dev_get_id((void *) driver, id_out);
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_proximity_handle_interrupt(cfn_sal_dev_proximity_t *driver)
-{
-    return cfn_sal_dev_handle_interrupt((void *) driver);
-}
-
 #ifdef __cplusplus
 }
 #endif

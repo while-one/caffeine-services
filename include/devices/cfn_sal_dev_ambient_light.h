@@ -55,6 +55,7 @@ typedef void (*cfn_sal_dev_ambient_light_callback_t)(cfn_sal_dev_ambient_light_t
 struct cfn_sal_dev_ambient_light_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Measurement Operations */
     cfn_hal_error_code_t (*read_lux)(cfn_sal_dev_ambient_light_t *driver, float *lux_out);
@@ -63,12 +64,9 @@ struct cfn_sal_dev_ambient_light_api_s
 
     /* Feature Data Retrieval */
     cfn_hal_error_code_t (*get_status)(cfn_sal_dev_ambient_light_t *driver, uint32_t *status_flags);
-    cfn_hal_error_code_t (*get_id)(cfn_sal_dev_ambient_light_t *driver, uint32_t *id_out);
-
-    void (*handle_interrupt)(cfn_sal_dev_ambient_light_t *driver);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_ambient_light_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_ambient_light_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(sal_dev_ambient_light,
                            cfn_sal_dev_ambient_light_config_t,
@@ -99,13 +97,28 @@ cfn_hal_error_code_t cfn_sal_dev_ambient_light_construct(cfn_sal_dev_ambient_lig
                                                          void                                     *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_ambient_light_destruct(cfn_sal_dev_ambient_light_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_config_validate(
+    const cfn_sal_dev_ambient_light_t *driver, const cfn_sal_dev_ambient_light_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_AMBIENT_LIGHT, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_init(cfn_sal_dev_ambient_light_t *driver)
 {
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_ambient_light_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_AMBIENT_LIGHT);
 }
 
@@ -124,6 +137,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_config_set(
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_ambient_light_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_AMBIENT_LIGHT, (const void *) config);
@@ -256,25 +274,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_get_status(cfn_sal
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_AMBIENT_LIGHT, get_status, driver, error, status_flags);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_ambient_light_get_id(cfn_sal_dev_ambient_light_t *driver,
-                                                                     uint32_t                    *id_out)
-{
-    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
-    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_AMBIENT_LIGHT, get_id, driver, error, id_out);
-    return error;
-}
-
-CFN_HAL_INLINE void cfn_sal_dev_ambient_light_handle_interrupt(cfn_sal_dev_ambient_light_t *driver)
-{
-    if (driver && driver->base.type == CFN_SAL_DEV_TYPE_AMBIENT_LIGHT && driver->api)
-    {
-        if (driver->api->handle_interrupt)
-        {
-            driver->api->handle_interrupt(driver);
-        }
-    }
 }
 
 #ifdef __cplusplus

@@ -13,6 +13,7 @@ extern "C"
 
 /* Includes ---------------------------------------------------------*/
 #include "cfn_sal.h"
+#include "cfn_sal_device.h"
 
 /* Defines ----------------------------------------------------------*/
 
@@ -104,13 +105,28 @@ cfn_hal_error_code_t cfn_sal_nwk_transport_construct(cfn_sal_nwk_transport_t    
                                                      void                                 *user_arg);
 cfn_hal_error_code_t cfn_sal_nwk_transport_destruct(cfn_sal_nwk_transport_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_config_validate(const cfn_sal_nwk_transport_t        *driver,
+                                                                          const cfn_sal_nwk_transport_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_NWK_TYPE_TRANSPORT, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_init(cfn_sal_nwk_transport_t *driver)
 {
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_nwk_transport_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_NWK_TYPE_TRANSPORT);
 }
 
@@ -129,6 +145,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_config_set(cfn_sal_nwk
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_nwk_transport_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_NWK_TYPE_TRANSPORT, (const void *) config);
@@ -230,7 +251,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_error_get(cfn_sal_nwk_
 }
 
 /* Service Specific Functions --------------------------------------- */
-
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_nwk_transport_send(cfn_sal_nwk_transport_t *driver,
                                                                const uint8_t           *data,
                                                                size_t                   len,

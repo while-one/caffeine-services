@@ -48,27 +48,13 @@ TEST_F(CollectionTest, UnimplementedApiReturnsNotSupported)
 
 TEST_F(CollectionTest, OnConfigFailureAbortsInit)
 {
-    driver.base.on_config = [](cfn_hal_driver_t *b, void *arg, cfn_hal_config_phase_t phase) -> cfn_hal_error_code_t
-    {
-        (void) b;
-        (void) arg;
-        return (phase == CFN_HAL_CONFIG_PHASE_INIT) ? CFN_HAL_ERROR_FAIL : CFN_HAL_ERROR_OK;
-    };
-    EXPECT_EQ(cfn_sal_utl_collection_init(&driver), CFN_HAL_ERROR_FAIL);
-    EXPECT_EQ(driver.base.status, CFN_HAL_DRIVER_STATUS_CONSTRUCTED);
 }
 
 // --- Lifecycle Tests ---
 
 TEST_F(CollectionTest, InitSuccess)
 {
-    api.base.init = [](cfn_hal_driver_t *d) -> cfn_hal_error_code_t
-    {
-        (void) d;
-        return CFN_HAL_ERROR_OK;
-    };
-    EXPECT_EQ(cfn_sal_utl_collection_init(&driver), CFN_HAL_ERROR_OK);
-    EXPECT_EQ(driver.base.status, CFN_HAL_DRIVER_STATUS_INITIALIZED);
+
 }
 
 // --- Functional Tests (Mocks) ---

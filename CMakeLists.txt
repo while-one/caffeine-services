@@ -34,7 +34,7 @@ include(FetchContent)
 FetchContent_Declare(
     caffeine-hal
     GIT_REPOSITORY https://github.com/while-one/caffeine-hal.git
-    GIT_TAG        v0.6.0
+    GIT_TAG        v0.6.6
 
 )
 
@@ -60,6 +60,7 @@ target_link_libraries(${PROJECT_NAME} INTERFACE caffeine::hal)
 # Actual binary targets MUST explicitly list all sources for determinism
 set(CFN_SAL_SOURCES_H
     include/cfn_sal.h
+    include/cfn_sal_device.h
     include/cfn_sal_types.h
     include/devices/cfn_sal_dev_accelerometer.h
     include/devices/cfn_sal_dev_battery.h
@@ -68,6 +69,7 @@ set(CFN_SAL_SOURCES_H
     include/devices/cfn_sal_dev_composite.h
     include/devices/cfn_sal_dev_display.h
     include/devices/cfn_sal_dev_gnss.h
+    include/devices/cfn_sal_dev_gpio_expander.h
     include/devices/cfn_sal_dev_gsm.h
     include/devices/cfn_sal_dev_gyroscope.h
     include/devices/cfn_sal_dev_humidity.h

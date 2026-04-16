@@ -23,7 +23,9 @@ extern "C"
 typedef enum
 {
     CFN_SAL_DEV_LED_STATE_OFF = 0,
-    CFN_SAL_DEV_LED_STATE_ON
+    CFN_SAL_DEV_LED_STATE_ON,
+
+    CFN_SAL_DEV_LED_STATE_MAX
 } cfn_sal_dev_led_state_t;
 
 typedef struct
@@ -52,6 +54,7 @@ typedef void (*cfn_sal_dev_led_callback_t)(cfn_sal_dev_led_t *driver, uint32_t e
 struct cfn_sal_dev_led_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Basic Operations */
     cfn_hal_error_code_t (*set_state)(cfn_sal_dev_led_t *driver, cfn_sal_dev_led_state_t state);
@@ -71,7 +74,7 @@ struct cfn_sal_dev_led_api_s
     cfn_hal_error_code_t (*set_blink)(cfn_sal_dev_led_t *driver, uint32_t interval_ms, uint32_t count);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_led_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_led_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(
     sal_dev_led, cfn_sal_dev_led_config_t, cfn_sal_dev_led_api_t, cfn_sal_phy_t, cfn_sal_dev_led_callback_t);
@@ -99,13 +102,28 @@ cfn_hal_error_code_t cfn_sal_dev_led_construct(cfn_sal_dev_led_t              *d
                                                void                           *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_led_destruct(cfn_sal_dev_led_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_config_validate(const cfn_sal_dev_led_t        *driver,
+                                                                    const cfn_sal_dev_led_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_LED, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_init(cfn_sal_dev_led_t *driver)
 {
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_led_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_LED);
 }
 
@@ -124,6 +142,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_led_config_set(cfn_sal_dev_led_t
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_led_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_LED, (const void *) config);

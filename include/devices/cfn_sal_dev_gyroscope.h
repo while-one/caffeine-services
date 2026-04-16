@@ -33,6 +33,8 @@ typedef enum
     CFN_SAL_DEV_GYROSCOPE_MODE_LOW_POWER,
     CFN_SAL_DEV_GYROSCOPE_MODE_STANDBY,
     CFN_SAL_DEV_GYROSCOPE_MODE_POWER_DOWN,
+
+    CFN_SAL_DEV_GYROSCOPE_MODE_MAX
 } cfn_sal_dev_gyroscope_mode_t;
 
 typedef enum
@@ -42,6 +44,8 @@ typedef enum
     CFN_SAL_DEV_GYROSCOPE_RANGE_500DPS,
     CFN_SAL_DEV_GYROSCOPE_RANGE_1000DPS,
     CFN_SAL_DEV_GYROSCOPE_RANGE_2000DPS,
+
+    CFN_SAL_DEV_GYROSCOPE_RANGE_MAX
 } cfn_sal_dev_gyroscope_range_t;
 
 typedef enum
@@ -54,12 +58,16 @@ typedef enum
     CFN_SAL_DEV_GYROSCOPE_ODR_200_HZ,
     CFN_SAL_DEV_GYROSCOPE_ODR_400_HZ,
     CFN_SAL_DEV_GYROSCOPE_ODR_1000_HZ,
+
+    CFN_SAL_DEV_GYROSCOPE_ODR_MAX
 } cfn_sal_dev_gyroscope_odr_t;
 
 typedef enum
 {
     CFN_SAL_DEV_GYROSCOPE_BW_ODR_DIV_2,
     CFN_SAL_DEV_GYROSCOPE_BW_ODR_DIV_4,
+
+    CFN_SAL_DEV_GYROSCOPE_BW_MAX
 } cfn_sal_dev_gyroscope_bw_t;
 
 typedef enum
@@ -68,24 +76,32 @@ typedef enum
     CFN_SAL_DEV_GYROSCOPE_FIFO_MODE_FIFO,
     CFN_SAL_DEV_GYROSCOPE_FIFO_MODE_STREAM,
     CFN_SAL_DEV_GYROSCOPE_FIFO_MODE_TRIGGER,
+
+    CFN_SAL_DEV_GYROSCOPE_FIFO_MODE_MAX
 } cfn_sal_dev_gyroscope_fifo_mode_t;
 
 typedef enum
 {
     CFN_SAL_DEV_GYROSCOPE_INT_PIN_1,
     CFN_SAL_DEV_GYROSCOPE_INT_PIN_2,
+
+    CFN_SAL_DEV_GYROSCOPE_INT_PIN_MAX
 } cfn_sal_dev_gyroscope_int_pin_t;
 
 typedef enum
 {
     CFN_SAL_DEV_GYROSCOPE_INT_MODE_PUSH_PULL,
     CFN_SAL_DEV_GYROSCOPE_INT_MODE_OPEN_DRAIN,
+
+    CFN_SAL_DEV_GYROSCOPE_INT_MODE_MAX
 } cfn_sal_dev_gyroscope_int_mode_t;
 
 typedef enum
 {
     CFN_SAL_DEV_GYROSCOPE_INT_LEVEL_ACTIVE_LOW,
     CFN_SAL_DEV_GYROSCOPE_INT_LEVEL_ACTIVE_HIGH,
+
+    CFN_SAL_DEV_GYROSCOPE_INT_LEVEL_MAX
 } cfn_sal_dev_gyroscope_int_level_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -131,6 +147,7 @@ typedef void (*cfn_sal_dev_gyroscope_callback_t)(cfn_sal_dev_gyroscope_t *driver
 struct cfn_sal_dev_gyroscope_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Measurement Operations */
     cfn_hal_error_code_t (*read_xyz_mdps)(cfn_sal_dev_gyroscope_t *driver, cfn_sal_dev_gyroscope_data_t *data_out);
@@ -141,12 +158,9 @@ struct cfn_sal_dev_gyroscope_api_s
                                       cfn_sal_dev_gyroscope_data_t *data,
                                       size_t                       *count);
     cfn_hal_error_code_t (*get_status)(cfn_sal_dev_gyroscope_t *driver, uint32_t *status_flags);
-    cfn_hal_error_code_t (*get_id)(cfn_sal_dev_gyroscope_t *driver, uint32_t *id_out);
-
-    void (*handle_interrupt)(cfn_sal_dev_gyroscope_t *driver);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_gyroscope_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_gyroscope_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(sal_dev_gyroscope,
                            cfn_sal_dev_gyroscope_config_t,
@@ -177,13 +191,40 @@ cfn_hal_error_code_t cfn_sal_dev_gyroscope_construct(cfn_sal_dev_gyroscope_t    
                                                      void                                 *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_gyroscope_destruct(cfn_sal_dev_gyroscope_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_config_validate(const cfn_sal_dev_gyroscope_t        *driver,
+                                                                          const cfn_sal_dev_gyroscope_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+
+    if (config->mode >= CFN_SAL_DEV_GYROSCOPE_MODE_MAX || config->range >= CFN_SAL_DEV_GYROSCOPE_RANGE_MAX ||
+        config->odr >= CFN_SAL_DEV_GYROSCOPE_ODR_MAX || config->bandwidth >= CFN_SAL_DEV_GYROSCOPE_BW_MAX ||
+        config->fifo_mode >= CFN_SAL_DEV_GYROSCOPE_FIFO_MODE_MAX ||
+        config->int1_config.mode >= CFN_SAL_DEV_GYROSCOPE_INT_MODE_MAX ||
+        config->int1_config.level >= CFN_SAL_DEV_GYROSCOPE_INT_LEVEL_MAX ||
+        config->int2_config.mode >= CFN_SAL_DEV_GYROSCOPE_INT_MODE_MAX ||
+        config->int2_config.level >= CFN_SAL_DEV_GYROSCOPE_INT_LEVEL_MAX)
+    {
+        return CFN_HAL_ERROR_BAD_CONFIG;
+    }
+
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_GYROSCOPE, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_init(cfn_sal_dev_gyroscope_t *driver)
 {
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_gyroscope_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_GYROSCOPE);
 }
 
@@ -202,6 +243,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_config_set(cfn_sal_dev
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_gyroscope_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_GYROSCOPE, (const void *) config);
@@ -335,24 +381,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_get_status(cfn_sal_dev
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_GYROSCOPE, get_status, driver, error, status_flags);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_get_id(cfn_sal_dev_gyroscope_t *driver, uint32_t *id_out)
-{
-    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
-    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_GYROSCOPE, get_id, driver, error, id_out);
-    return error;
-}
-
-CFN_HAL_INLINE void cfn_sal_dev_gyroscope_handle_interrupt(cfn_sal_dev_gyroscope_t *driver)
-{
-    if (driver && driver->base.type == CFN_SAL_DEV_TYPE_GYROSCOPE && driver->api)
-    {
-        if (driver->api->handle_interrupt)
-        {
-            driver->api->handle_interrupt(driver);
-        }
-    }
 }
 
 #ifdef __cplusplus

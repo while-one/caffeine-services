@@ -164,14 +164,54 @@ cfn_hal_error_code_t cfn_sal_utl_serialization_construct(cfn_sal_utl_serializati
 
 cfn_hal_error_code_t cfn_sal_utl_serialization_destruct(cfn_sal_utl_serialization_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_serialization_config_validate(
+    const cfn_sal_utl_serialization_t *driver, const cfn_sal_utl_serialization_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_UTL_TYPE_SERIALIZATION, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_serialization_init(cfn_sal_utl_serialization_t *driver)
 {
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_utl_serialization_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_UTL_TYPE_SERIALIZATION);
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_serialization_deinit(cfn_sal_utl_serialization_t *driver)
+{
+    if (!driver)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_deinit(&driver->base, CFN_SAL_UTL_TYPE_SERIALIZATION);
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_serialization_config_set(
+    cfn_sal_utl_serialization_t *driver, const cfn_sal_utl_serialization_config_t *config)
+{
+    if (!driver)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_utl_serialization_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
+    driver->config = config;
+    return cfn_hal_base_config_set(&driver->base, CFN_SAL_UTL_TYPE_SERIALIZATION, (const void *) config);
 }
 
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_serialization_encode(cfn_sal_utl_serialization_t              *driver,

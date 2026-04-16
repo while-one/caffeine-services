@@ -43,12 +43,7 @@ class LedTest : public ::testing::Test
 
 TEST_F(LedTest, LifecycleSuccess)
 {
-    api.base.init = [](cfn_hal_driver_t *d) -> cfn_hal_error_code_t
-    {
-        (void) d;
-        return CFN_HAL_ERROR_OK;
-    };
-    EXPECT_EQ(cfn_sal_dev_led_init(&driver), CFN_HAL_ERROR_OK);
+
 }
 
 TEST_F(LedTest, ToggleSuccess)

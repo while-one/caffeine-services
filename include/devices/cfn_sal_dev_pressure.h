@@ -24,6 +24,8 @@ typedef enum
 {
     CFN_SAL_DEV_PRESSURE_MODE_CONTINUOUS,
     CFN_SAL_DEV_PRESSURE_MODE_ONE_SHOT,
+
+    CFN_SAL_DEV_PRESSURE_MODE_MAX
 } cfn_sal_dev_pressure_mode_t;
 
 typedef enum
@@ -40,6 +42,8 @@ typedef enum
     CFN_SAL_DEV_PRESSURE_OVERSAMPLING_4X,
     CFN_SAL_DEV_PRESSURE_OVERSAMPLING_8X,
     CFN_SAL_DEV_PRESSURE_OVERSAMPLING_16X,
+
+    CFN_SAL_DEV_PRESSURE_OVERSAMPLING_MAX
 } cfn_sal_dev_pressure_oversampling_t;
 
 typedef enum
@@ -49,6 +53,8 @@ typedef enum
     CFN_SAL_DEV_PRESSURE_FILTER_COEFF_4,
     CFN_SAL_DEV_PRESSURE_FILTER_COEFF_8,
     CFN_SAL_DEV_PRESSURE_FILTER_COEFF_16,
+
+    CFN_SAL_DEV_PRESSURE_FILTER_MAX
 } cfn_sal_dev_pressure_filter_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -76,6 +82,7 @@ typedef void (*cfn_sal_dev_pressure_callback_t)(cfn_sal_dev_pressure_t *driver,
 struct cfn_sal_dev_pressure_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Measurement Operations */
     cfn_hal_error_code_t (*read_hpa)(cfn_sal_dev_pressure_t *driver, float *hpa_out);
@@ -87,12 +94,9 @@ struct cfn_sal_dev_pressure_api_s
     /* Configuration */
     cfn_hal_error_code_t (*start_conversion)(cfn_sal_dev_pressure_t *driver);
     cfn_hal_error_code_t (*get_status)(cfn_sal_dev_pressure_t *driver, uint32_t *status_flags);
-
-    cfn_hal_error_code_t (*get_id)(cfn_sal_dev_pressure_t *driver, uint32_t *id_out);
-    void (*handle_interrupt)(cfn_sal_dev_pressure_t *driver);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_pressure_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_pressure_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(sal_dev_pressure,
                            cfn_sal_dev_pressure_config_t,
@@ -123,13 +127,36 @@ cfn_hal_error_code_t cfn_sal_dev_pressure_construct(cfn_sal_dev_pressure_t      
                                                     void                                *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_pressure_destruct(cfn_sal_dev_pressure_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_pressure_config_validate(const cfn_sal_dev_pressure_t        *driver,
+                                                                         const cfn_sal_dev_pressure_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+
+    if (config->mode >= CFN_SAL_DEV_PRESSURE_MODE_MAX ||
+        config->oversampling >= CFN_SAL_DEV_PRESSURE_OVERSAMPLING_MAX ||
+        config->filter >= CFN_SAL_DEV_PRESSURE_FILTER_MAX)
+    {
+        return CFN_HAL_ERROR_BAD_CONFIG;
+    }
+
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_PRESSURE, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_pressure_init(cfn_sal_dev_pressure_t *driver)
 {
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_pressure_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_PRESSURE);
 }
 
@@ -148,6 +175,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_pressure_config_set(cfn_sal_dev_
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_pressure_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_PRESSURE, (const void *) config);
@@ -283,24 +315,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_pressure_get_status(cfn_sal_dev_
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_PRESSURE, get_status, driver, error, status_flags);
     return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_pressure_get_id(cfn_sal_dev_pressure_t *driver, uint32_t *id_out)
-{
-    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
-    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_DEV_TYPE_PRESSURE, get_id, driver, error, id_out);
-    return error;
-}
-
-CFN_HAL_INLINE void cfn_sal_dev_pressure_handle_interrupt(cfn_sal_dev_pressure_t *driver)
-{
-    if (driver && driver->base.type == CFN_SAL_DEV_TYPE_PRESSURE && driver->api)
-    {
-        if (driver->api->handle_interrupt)
-        {
-            driver->api->handle_interrupt(driver);
-        }
-    }
 }
 
 #ifdef __cplusplus

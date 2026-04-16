@@ -15,6 +15,7 @@ extern "C"
 #include "cfn_hal.h"
 #include "cfn_hal_base.h"
 #include "cfn_sal_types.h"
+#include "cfn_sal_device.h"
 
 /* Defines ----------------------------------------------------------*/
 
@@ -46,10 +47,6 @@ extern "C"
         void              *cb_user_arg;                                                                                \
     };                                                                                                                 \
     typedef struct cfn_##prefix##_s cfn_##prefix##_t
-
-/* Types Enums ------------------------------------------------------*/
-
-/* Extend cfn_hal_error_code_t with service specific errors if needed */
 
 /* Types Structs ----------------------------------------------------*/
 

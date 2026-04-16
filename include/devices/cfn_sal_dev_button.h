@@ -32,7 +32,9 @@ typedef enum
 typedef enum
 {
     CFN_SAL_DEV_BUTTON_STATE_RELEASED = 0,
-    CFN_SAL_DEV_BUTTON_STATE_PRESSED
+    CFN_SAL_DEV_BUTTON_STATE_PRESSED,
+
+    CFN_SAL_DEV_BUTTON_STATE_MAX
 } cfn_sal_dev_button_state_t;
 
 /* Types Structs ----------------------------------------------------*/
@@ -62,6 +64,7 @@ typedef void (*cfn_sal_dev_button_callback_t)(cfn_sal_dev_button_t *driver,
 struct cfn_sal_dev_button_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Basic Operations */
     cfn_hal_error_code_t (*get_state)(cfn_sal_dev_button_t *driver, cfn_sal_dev_button_state_t *state_out);
@@ -72,7 +75,7 @@ struct cfn_sal_dev_button_api_s
     cfn_hal_error_code_t (*get_hold_time_ms)(cfn_sal_dev_button_t *driver, uint32_t *time_out);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_button_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_button_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(sal_dev_button,
                            cfn_sal_dev_button_config_t,
@@ -103,13 +106,28 @@ cfn_hal_error_code_t cfn_sal_dev_button_construct(cfn_sal_dev_button_t          
                                                   void                              *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_button_destruct(cfn_sal_dev_button_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_config_validate(const cfn_sal_dev_button_t        *driver,
+                                                                       const cfn_sal_dev_button_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_BUTTON, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_init(cfn_sal_dev_button_t *driver)
 {
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_button_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_BUTTON);
 }
 
@@ -128,6 +146,11 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_button_config_set(cfn_sal_dev_bu
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_button_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
     }
     driver->config = config;
     return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_BUTTON, (const void *) config);

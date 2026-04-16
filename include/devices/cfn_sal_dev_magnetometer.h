@@ -35,6 +35,8 @@ typedef enum
     CFN_SAL_DEV_MAGNETOMETER_MODE_POWER_DOWN,
     CFN_SAL_DEV_MAGNETOMETER_MODE_CONTINUOUS,
     CFN_SAL_DEV_MAGNETOMETER_MODE_ONE_SHOT,
+
+    CFN_SAL_DEV_MAGNETOMETER_MODE_MAX
 } cfn_sal_dev_magnetometer_mode_t;
 
 typedef enum
@@ -54,8 +56,10 @@ typedef struct
 
 typedef struct
 {
-    uint32_t sampling_rate_hz;
-    void    *custom;
+    uint32_t                         sampling_rate_hz;
+    cfn_sal_dev_magnetometer_range_t range;
+    cfn_sal_dev_magnetometer_mode_t  mode;
+    void                            *custom;
 } cfn_sal_dev_magnetometer_config_t;
 
 typedef struct cfn_sal_dev_magnetometer_s     cfn_sal_dev_magnetometer_t;
@@ -72,6 +76,7 @@ typedef void (*cfn_sal_dev_magnetometer_callback_t)(cfn_sal_dev_magnetometer_t *
 struct cfn_sal_dev_magnetometer_api_s
 {
     cfn_hal_api_base_t base;
+    cfn_sal_dev_api_t  dev;
 
     /* Measurement Operations */
     cfn_hal_error_code_t (*read_xyz_ugauss)(cfn_sal_dev_magnetometer_t      *driver,
@@ -87,7 +92,7 @@ struct cfn_sal_dev_magnetometer_api_s
     cfn_hal_error_code_t (*get_status)(cfn_sal_dev_magnetometer_t *driver, uint32_t *status_flags);
 };
 
-CFN_HAL_VMT_CHECK(struct cfn_sal_dev_magnetometer_api_s);
+CFN_SAL_DEV_VMT_CHECK(struct cfn_sal_dev_magnetometer_api_s);
 
 CFN_SAL_CREATE_DRIVER_TYPE(sal_dev_magnetometer,
                            cfn_sal_dev_magnetometer_config_t,
@@ -118,13 +123,34 @@ cfn_hal_error_code_t cfn_sal_dev_magnetometer_construct(cfn_sal_dev_magnetometer
                                                         void                                    *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_magnetometer_destruct(cfn_sal_dev_magnetometer_t *driver);
 
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_magnetometer_config_validate(
+    const cfn_sal_dev_magnetometer_t *driver, const cfn_sal_dev_magnetometer_config_t *config)
+{
+    if (!driver || !config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+
+    if (config->mode >= CFN_SAL_DEV_MAGNETOMETER_MODE_MAX || config->range >= CFN_SAL_DEV_MAGNETOMETER_RANGE_MAX)
+    {
+        return CFN_HAL_ERROR_BAD_CONFIG;
+    }
+
+    return cfn_hal_base_config_validate(&driver->base, CFN_SAL_DEV_TYPE_MAGNETOMETER, config);
+}
+
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_magnetometer_init(cfn_sal_dev_magnetometer_t *driver)
 {
     if (!driver)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
+    cfn_hal_error_code_t error = cfn_sal_dev_magnetometer_config_validate(driver, driver->config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
     return cfn_hal_base_init(&driver->base, CFN_SAL_DEV_TYPE_MAGNETOMETER);
 }
 
@@ -135,6 +161,33 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_magnetometer_deinit(cfn_sal_dev_
         return CFN_HAL_ERROR_BAD_PARAM;
     }
     return cfn_hal_base_deinit(&driver->base, CFN_SAL_DEV_TYPE_MAGNETOMETER);
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_magnetometer_config_set(cfn_sal_dev_magnetometer_t              *driver,
+                                                                        const cfn_sal_dev_magnetometer_config_t *config)
+{
+    if (!driver)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    cfn_hal_error_code_t error = cfn_sal_dev_magnetometer_config_validate(driver, config);
+    if (error != CFN_HAL_ERROR_OK)
+    {
+        return error;
+    }
+    driver->config = config;
+    return cfn_hal_base_config_set(&driver->base, CFN_SAL_DEV_TYPE_MAGNETOMETER, (const void *) config);
+}
+
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_magnetometer_config_get(cfn_sal_dev_magnetometer_t        *driver,
+                                                                        cfn_sal_dev_magnetometer_config_t *config)
+{
+    if (!driver || !config || !driver->config)
+    {
+        return CFN_HAL_ERROR_BAD_PARAM;
+    }
+    *config = *(driver->config);
+    return CFN_HAL_ERROR_OK;
 }
 
 CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_magnetometer_read_xyz_ugauss(cfn_sal_dev_magnetometer_t      *driver,

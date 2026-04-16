@@ -118,16 +118,15 @@ cfn_hal_error_code_t cfn_sal_dev_humidity_construct(cfn_sal_dev_humidity_t      
                                                     void                                *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_humidity_destruct(cfn_sal_dev_humidity_t *driver);
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_humidity_config_validate(
-    const cfn_sal_dev_humidity_t *driver, const cfn_sal_dev_humidity_config_t *config)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_humidity_config_validate(const cfn_sal_dev_humidity_t        *driver,
+                                                                         const cfn_sal_dev_humidity_config_t *config)
 {
     if (!driver || !config)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
 
-    if (config->mode >= CFN_SAL_DEV_HUMIDITY_MODE_MAX ||
-        config->oversampling >= CFN_SAL_DEV_HUMIDITY_OVERSAMPLING_MAX)
+    if (config->mode >= CFN_SAL_DEV_HUMIDITY_MODE_MAX || config->oversampling >= CFN_SAL_DEV_HUMIDITY_OVERSAMPLING_MAX)
     {
         return CFN_HAL_ERROR_BAD_CONFIG;
     }
@@ -141,7 +140,7 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_humidity_init(cfn_sal_dev_humidi
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
     cfn_hal_error_code_t error = cfn_sal_dev_humidity_config_validate(driver, driver->config);
     if (error != CFN_HAL_ERROR_OK)
     {

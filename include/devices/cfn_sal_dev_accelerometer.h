@@ -252,8 +252,7 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_accelerometer_config_validate(
 
     if (config->mode >= CFN_SAL_DEV_ACCELEROMETER_MODE_MAX ||
         config->resolution >= CFN_SAL_DEV_ACCELEROMETER_RESOLUTION_MAX ||
-        config->odr >= CFN_SAL_DEV_ACCELEROMETER_ODR_MAX ||
-        config->bandwidth >= CFN_SAL_DEV_ACCELEROMETER_BW_MAX ||
+        config->odr >= CFN_SAL_DEV_ACCELEROMETER_ODR_MAX || config->bandwidth >= CFN_SAL_DEV_ACCELEROMETER_BW_MAX ||
         config->range >= CFN_SAL_DEV_ACCELEROMETER_RANGE_MAX ||
         config->fifo_mode >= CFN_SAL_DEV_ACCELEROMETER_FIFO_MODE_MAX ||
         config->int1_config.mode >= CFN_SAL_DEV_ACCELEROMETER_INT_MODE_MAX ||
@@ -273,7 +272,7 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_accelerometer_init(cfn_sal_dev_a
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
     cfn_hal_error_code_t error = cfn_sal_dev_accelerometer_config_validate(driver, driver->config);
     if (error != CFN_HAL_ERROR_OK)
     {

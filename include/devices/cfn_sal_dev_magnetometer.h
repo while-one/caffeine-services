@@ -56,8 +56,10 @@ typedef struct
 
 typedef struct
 {
-    uint32_t sampling_rate_hz;
-    void    *custom;
+    uint32_t                         sampling_rate_hz;
+    cfn_sal_dev_magnetometer_range_t range;
+    cfn_sal_dev_magnetometer_mode_t  mode;
+    void                            *custom;
 } cfn_sal_dev_magnetometer_config_t;
 
 typedef struct cfn_sal_dev_magnetometer_s     cfn_sal_dev_magnetometer_t;
@@ -129,7 +131,7 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_magnetometer_config_validate(
         return CFN_HAL_ERROR_BAD_PARAM;
     }
 
-    if (config->mode >= CFN_SAL_DEV_MAGNETOMETER_MODE_MAX)
+    if (config->mode >= CFN_SAL_DEV_MAGNETOMETER_MODE_MAX || config->range >= CFN_SAL_DEV_MAGNETOMETER_RANGE_MAX)
     {
         return CFN_HAL_ERROR_BAD_CONFIG;
     }
@@ -143,7 +145,7 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_magnetometer_init(cfn_sal_dev_ma
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
     cfn_hal_error_code_t error = cfn_sal_dev_magnetometer_config_validate(driver, driver->config);
     if (error != CFN_HAL_ERROR_OK)
     {

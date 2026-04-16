@@ -105,8 +105,8 @@ cfn_hal_error_code_t cfn_sal_utl_at_parser_construct(cfn_sal_utl_at_parser_t    
                                                      void                                 *user_arg);
 cfn_hal_error_code_t cfn_sal_utl_at_parser_destruct(cfn_sal_utl_at_parser_t *driver);
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_at_parser_config_validate(
-    const cfn_sal_utl_at_parser_t *driver, const cfn_sal_utl_at_parser_config_t *config)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_at_parser_config_validate(const cfn_sal_utl_at_parser_t        *driver,
+                                                                          const cfn_sal_utl_at_parser_config_t *config)
 {
     if (!driver || !config)
     {
@@ -121,7 +121,7 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_at_parser_init(cfn_sal_utl_at_pa
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
     cfn_hal_error_code_t error = cfn_sal_utl_at_parser_config_validate(driver, driver->config);
     if (error != CFN_HAL_ERROR_OK)
     {

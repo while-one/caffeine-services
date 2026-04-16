@@ -180,7 +180,7 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_serialization_init(cfn_sal_utl_s
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
     cfn_hal_error_code_t error = cfn_sal_utl_serialization_config_validate(driver, driver->config);
     if (error != CFN_HAL_ERROR_OK)
     {
@@ -198,8 +198,8 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_serialization_deinit(cfn_sal_utl
     return cfn_hal_base_deinit(&driver->base, CFN_SAL_UTL_TYPE_SERIALIZATION);
 }
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_serialization_config_set(cfn_sal_utl_serialization_t              *driver,
-                                                                         const cfn_sal_utl_serialization_config_t *config)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_serialization_config_set(
+    cfn_sal_utl_serialization_t *driver, const cfn_sal_utl_serialization_config_t *config)
 {
     if (!driver)
     {

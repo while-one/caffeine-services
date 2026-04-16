@@ -53,9 +53,12 @@ typedef enum
 
 typedef struct
 {
-    cfn_sal_utl_logging_level_t min_level;
-    bool                        use_timestamp;
-    void                       *custom;
+    cfn_sal_utl_logging_level_t  level;
+    cfn_sal_utl_logging_target_t target;
+    cfn_sal_utl_logging_format_t format;
+    bool                         use_timestamp;
+    bool                         enable_color;
+    void                        *custom;
 } cfn_sal_utl_logging_config_t;
 
 typedef struct cfn_sal_utl_logging_s     cfn_sal_utl_logging_t;
@@ -79,12 +82,6 @@ struct cfn_sal_utl_logging_api_s
                                 const char                 *fmt,
                                 va_list                     args);
     cfn_hal_error_code_t (*flush)(cfn_sal_utl_logging_t *driver);
-
-    /* Configuration */
-    cfn_hal_error_code_t (*set_level)(cfn_sal_utl_logging_t *driver, cfn_sal_utl_logging_level_t level);
-    cfn_hal_error_code_t (*set_output_target)(cfn_sal_utl_logging_t *driver, cfn_sal_utl_logging_target_t target);
-    cfn_hal_error_code_t (*enable_color)(cfn_sal_utl_logging_t *driver, bool enable);
-    cfn_hal_error_code_t (*set_format)(cfn_sal_utl_logging_t *driver, cfn_sal_utl_logging_format_t format);
 };
 
 CFN_HAL_VMT_CHECK(struct cfn_sal_utl_logging_api_s);
@@ -118,16 +115,15 @@ cfn_hal_error_code_t cfn_sal_utl_logging_construct(cfn_sal_utl_logging_t        
                                                    void                               *user_arg);
 cfn_hal_error_code_t cfn_sal_utl_logging_destruct(cfn_sal_utl_logging_t *driver);
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_config_validate(
-    const cfn_sal_utl_logging_t *driver, const cfn_sal_utl_logging_config_t *config)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_config_validate(const cfn_sal_utl_logging_t        *driver,
+                                                                        const cfn_sal_utl_logging_config_t *config)
 {
     if (!driver || !config)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
 
-    if (config->level >= CFN_SAL_UTL_LOGGING_LEVEL_MAX ||
-        config->target >= CFN_SAL_UTL_LOGGING_TARGET_MAX ||
+    if (config->level >= CFN_SAL_UTL_LOGGING_LEVEL_MAX || config->target >= CFN_SAL_UTL_LOGGING_TARGET_MAX ||
         config->format >= CFN_SAL_UTL_LOGGING_FORMAT_MAX)
     {
         return CFN_HAL_ERROR_BAD_CONFIG;
@@ -142,7 +138,7 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_init(cfn_sal_utl_logging
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
     cfn_hal_error_code_t error = cfn_sal_utl_logging_config_validate(driver, driver->config);
     if (error != CFN_HAL_ERROR_OK)
     {
@@ -286,37 +282,6 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_flush(cfn_sal_utl_loggin
 {
     cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
     CFN_HAL_CHECK_AND_CALL_FUNC(CFN_SAL_UTL_TYPE_LOGGING, flush, driver, error);
-    return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_set_level(cfn_sal_utl_logging_t      *driver,
-                                                                  cfn_sal_utl_logging_level_t level)
-{
-    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
-    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_UTL_TYPE_LOGGING, set_level, driver, error, level);
-    return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_set_output_target(cfn_sal_utl_logging_t       *driver,
-                                                                          cfn_sal_utl_logging_target_t target)
-{
-    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
-    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_UTL_TYPE_LOGGING, set_output_target, driver, error, target);
-    return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_enable_color(cfn_sal_utl_logging_t *driver, bool enable)
-{
-    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
-    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_UTL_TYPE_LOGGING, enable_color, driver, error, enable);
-    return error;
-}
-
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_utl_logging_set_format(cfn_sal_utl_logging_t       *driver,
-                                                                   cfn_sal_utl_logging_format_t format)
-{
-    cfn_hal_error_code_t error = CFN_HAL_ERROR_OK;
-    CFN_HAL_CHECK_AND_CALL_FUNC_VARG(CFN_SAL_UTL_TYPE_LOGGING, set_format, driver, error, format);
     return error;
 }
 

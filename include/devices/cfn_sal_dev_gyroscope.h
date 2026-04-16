@@ -191,18 +191,16 @@ cfn_hal_error_code_t cfn_sal_dev_gyroscope_construct(cfn_sal_dev_gyroscope_t    
                                                      void                                 *user_arg);
 cfn_hal_error_code_t cfn_sal_dev_gyroscope_destruct(cfn_sal_dev_gyroscope_t *driver);
 
-CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_config_validate(
-    const cfn_sal_dev_gyroscope_t *driver, const cfn_sal_dev_gyroscope_config_t *config)
+CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_config_validate(const cfn_sal_dev_gyroscope_t        *driver,
+                                                                          const cfn_sal_dev_gyroscope_config_t *config)
 {
     if (!driver || !config)
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
 
-    if (config->mode >= CFN_SAL_DEV_GYROSCOPE_MODE_MAX ||
-        config->range >= CFN_SAL_DEV_GYROSCOPE_RANGE_MAX ||
-        config->odr >= CFN_SAL_DEV_GYROSCOPE_ODR_MAX ||
-        config->bandwidth >= CFN_SAL_DEV_GYROSCOPE_BW_MAX ||
+    if (config->mode >= CFN_SAL_DEV_GYROSCOPE_MODE_MAX || config->range >= CFN_SAL_DEV_GYROSCOPE_RANGE_MAX ||
+        config->odr >= CFN_SAL_DEV_GYROSCOPE_ODR_MAX || config->bandwidth >= CFN_SAL_DEV_GYROSCOPE_BW_MAX ||
         config->fifo_mode >= CFN_SAL_DEV_GYROSCOPE_FIFO_MODE_MAX ||
         config->int1_config.mode >= CFN_SAL_DEV_GYROSCOPE_INT_MODE_MAX ||
         config->int1_config.level >= CFN_SAL_DEV_GYROSCOPE_INT_LEVEL_MAX ||
@@ -221,7 +219,7 @@ CFN_HAL_INLINE cfn_hal_error_code_t cfn_sal_dev_gyroscope_init(cfn_sal_dev_gyros
     {
         return CFN_HAL_ERROR_BAD_PARAM;
     }
-    driver->base.vmt = (const struct cfn_hal_api_base_s *) driver->api;
+    driver->base.vmt           = (const struct cfn_hal_api_base_s *) driver->api;
     cfn_hal_error_code_t error = cfn_sal_dev_gyroscope_config_validate(driver, driver->config);
     if (error != CFN_HAL_ERROR_OK)
     {
